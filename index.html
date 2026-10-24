@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>متابعتي اليومية</title>
+<title>المتابعة اليومية</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -21,95 +21,94 @@
 * { box-sizing: border-box; }
 body { margin: 0; font-family: "Tajawal", sans-serif; background: var(--bg-color); color: var(--text-main); }
 .app-root { min-height: 100vh; padding: 16px 12px; display: flex; justify-content: center; }
-.shell { width: 100%; max-width: 560px; display: flex; flex-direction: column; gap: 16px; }
+.shell { width: 100%; max-width: 560px; display: flex; flex-direction: column; gap: 14px; }
 
-/* هيدر مع لوجو كبير وبارز ومخصص للضغط أو التحميل التلقائي */
-.hero { background: #FFFFFF; border: 1px solid var(--border-color); border-radius: 22px; padding: 22px; text-align: center; box-shadow: 0 5px 20px rgba(67,43,77,.055); }
-.logo-slot { width: 100px; height: 100px; margin: 0 auto 12px; border-radius: 24px; background: #F8FAFC; border: 2px dashed #CBD5E1; display: flex; align-items: center; justify-content: center; overflow: hidden; cursor: pointer; transition: border-color 0.2s; }
-.logo-slot:hover { border-color: var(--primary); }
+/* هيدر مع لوجو ثابت ونظيف بدون أي حدود أو دوائر محيطة */
+.hero { background: #FFFFFF; border: 1px solid var(--border-color); border-radius: 20px; padding: 18px; text-align: center; box-shadow: 0 4px 15px rgba(67,43,77,.05); }
+.logo-slot { width: 90px; height: 90px; margin: 0 auto 10px; border-radius: 20px; background: #FFFFFF; display: flex; align-items: center; justify-content: center; overflow: hidden; border: none; outline: none; }
 .logo-slot img { width: 100%; height: 100%; object-fit: contain; background: #fff; }
-.logo-placeholder { font-size: 12px; color: #64748B; text-align: center; font-weight: 700; line-height: 1.4; padding: 10px; }
-h1 { font-size: 24px; font-weight: 800; margin: 0 0 4px; color: var(--text-main); }
-.hero p { margin: 0; font-size: 13px; color: #6C827A; }
+.logo-placeholder { font-size: 11px; color: #64748B; text-align: center; font-weight: 700; }
+h1 { font-size: 22px; font-weight: 800; margin: 0 0 4px; color: var(--text-main); }
+.hero p { margin: 0; font-size: 12px; color: #6C827A; }
 
 /* البطاقات العامة */
-.card { background: rgba(255,255,255,.97); border: 1px solid #E4E8F0; border-radius: 22px; padding: 20px; box-shadow: 0 12px 30px rgba(44,55,83,.055); }
-.section-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid #E8EEE6; }
-h2 { margin: 0; font-size: 20px; font-weight: 800; color: #762454; }
-.muted { font-size: 12px; color: #6C827A; }
+.card { background: rgba(255,255,255,.97); border: 1px solid #E4E8F0; border-radius: 20px; padding: 16px; box-shadow: 0 8px 20px rgba(44,55,83,.04); }
+.section-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px solid #E8EEE6; }
+h2 { margin: 0; font-size: 18px; font-weight: 800; color: #762454; }
+.muted { font-size: 11px; color: #6C827A; }
 
-/* التقويم المرن */
-.month-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
-.month-label { font-weight: 800; font-size: 16px; }
-.nav-btn { border: 1px solid #E5D7E7; background: #FFF5FA; color: var(--primary); width: 36px; height: 36px; border-radius: 12px; cursor: pointer; font-size: 18px; font-weight: bold; }
-.calendar-scroll { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 6px; scrollbar-width: thin; }
-.day { min-width: 54px; height: 60px; border: 1px solid #E3EBE6; border-radius: 12px; background: #FBFDFC; padding: 4px; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; font: inherit; flex-shrink: 0; }
-.day .day-name { font-size: 10px; color: #71867E; font-weight: 700; }
-.day .num { font-size: 14px; font-weight: 800; }
-.day .dot { width: 5px; height: 5px; border-radius: 50%; background: transparent; }
+/* التقويم المرن بدون أشرطة بيضاء */
+.month-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.month-label { font-weight: 800; font-size: 14px; }
+.nav-btn { border: 1px solid #E5D7E7; background: #FFF5FA; color: var(--primary); width: 32px; height: 32px; border-radius: 10px; cursor: pointer; font-size: 16px; font-weight: bold; }
+.calendar-scroll { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: thin; }
+.day { min-width: 50px; height: 54px; border: 1px solid #E3EBE6; border-radius: 10px; background: #FBFDFC; padding: 4px 2px; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; font: inherit; flex-shrink: 0; -webkit-appearance: none; }
+.day span { pointer-events: none; }
+.day .day-name { font-size: 10px; color: #71867E; font-weight: 700; line-height: 1.2; }
+.day .num { font-size: 13px; font-weight: 800; line-height: 1.2; color: #30253A; }
+.day .dot { width: 4px; height: 4px; border-radius: 50%; background: transparent; margin-top: 1px; }
 .day.done .dot { background: var(--primary); }
-.day.selected { background: linear-gradient(135deg, var(--primary), var(--secondary)); border-color: transparent; color: #fff; box-shadow: 0 5px 13px rgba(16,126,175,.22); }
-.day.selected .day-name, .day.selected .dot { color: #fff; background: #fff; }
+.day.selected { background: linear-gradient(135deg, var(--primary), var(--secondary)) !important; border-color: transparent !important; color: #fff !important; box-shadow: 0 4px 10px rgba(16,126,175,.2); }
+.day.selected .day-name, .day.selected .num, .day.selected .dot { color: #fff !important; background: transparent !important; }
 
-.progress-wrap { margin-top: 12px; display: flex; align-items: center; gap: 8px; }
-.progress-track { height: 7px; flex: 1; border-radius: 20px; background: #E4ECE7; overflow: hidden; }
+.progress-wrap { margin-top: 8px; display: flex; align-items: center; gap: 8px; }
+.progress-track { height: 6px; flex: 1; border-radius: 20px; background: #E4ECE7; overflow: hidden; }
 .progress-fill { height: 100%; background: linear-gradient(90deg, var(--primary), var(--secondary)); width: 0; border-radius: 20px; transition: width .2s; }
 
-/* النموذج والمدخلات تحت بعضها */
-.form-grid { display: flex; flex-direction: column; gap: 14px; }
-.field { padding: 16px; border: 1px solid #E5E7F0; border-radius: 16px; background: #FFFFFF; box-shadow: 0 4px 14px rgba(52,57,87,.035); }
-label, .field-label { display: block; font-weight: 800; font-size: 15px; margin-bottom: 10px; color: #762454; }
-.option-grid, .choice-row, .checkbox-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+/* النموذج والمدخلات */
+.form-grid { display: flex; flex-direction: column; gap: 12px; }
+.field { padding: 14px; border: 1px solid #E5E7F0; border-radius: 14px; background: #FFFFFF; box-shadow: 0 3px 10px rgba(52,57,87,.03); }
+label, .field-label { display: block; font-weight: 800; font-size: 14px; margin-bottom: 8px; color: #762454; }
+.option-grid, .choice-row, .checkbox-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; }
 .option-card, .choice, .check-item { position: relative; display: flex; cursor: pointer; }
 .option-card input, .choice input { position: absolute; opacity: 0; width: 1px; height: 1px; }
-.option-card span, .choice span, .check-item { display: flex; align-items: center; justify-content: center; text-align: center; gap: 6px; width: 100%; min-height: 42px; padding: 8px; border: 1px solid #E8DCE8; border-radius: 11px; background: #FFFFFF; color: #44344B; font-size: 13px; font-weight: 600; cursor: pointer; transition: all .15s; }
+.option-card span, .choice span, .check-item { display: flex; align-items: center; justify-content: center; text-align: center; gap: 6px; width: 100%; min-height: 38px; padding: 6px; border: 1px solid #E8DCE8; border-radius: 10px; background: #FFFFFF; color: #44344B; font-size: 12px; font-weight: 600; cursor: pointer; transition: all .15s; }
 .option-card input:checked + span, .choice input:checked + span, .check-item:has(input:checked) { background: #FCEAF4; border-color: var(--primary); color: #8B2865; font-weight: 700; box-shadow: 0 0 0 2px rgba(201,58,140,.11); }
-.check-item { align-items: center; justify-content: flex-start; padding: 10px 12px; border-radius: 11px; border: 1px solid #E8DCE8; background: #FFF; font-size: 13px; font-weight: 600; }
-.check-item input { accent-color: var(--primary); width: 16px; height: 16px; margin-left: 6px; }
+.check-item { align-items: center; justify-content: flex-start; padding: 8px 10px; border-radius: 10px; border: 1px solid #E8DCE8; background: #FFF; font-size: 12px; font-weight: 600; }
+.check-item input { accent-color: var(--primary); width: 15px; height: 15px; margin-left: 6px; }
 
-textarea { width: 100%; border: 1px solid #D9E5DE; border-radius: 12px; padding: 12px; font-family: inherit; font-size: 13px; resize: vertical; min-height: 90px; outline: none; background: #FBFDFC; }
+textarea { width: 100%; border: 1px solid #D9E5DE; border-radius: 10px; padding: 10px; font-family: inherit; font-size: 12px; resize: vertical; min-height: 60px; outline: none; background: #FBFDFC; }
 textarea:focus { border-color: var(--secondary); box-shadow: 0 0 0 3px rgba(16,126,175,.12); }
 
 /* الأزرار */
-.actions { display: flex; flex-direction: column; gap: 10px; margin-top: 16px; }
-.btn { font: inherit; border: 0; border-radius: 13px; padding: 14px; cursor: pointer; font-weight: 700; font-size: 15px; text-align: center; width: 100%; transition: transform .15s; }
+.actions { display: flex; flex-direction: column; gap: 8px; margin-top: 14px; }
+.btn { font: inherit; border: 0; border-radius: 12px; padding: 12px; cursor: pointer; font-weight: 700; font-size: 14px; text-align: center; width: 100%; transition: transform .15s; }
 .btn:active { transform: scale(0.98); }
-.btn-primary { background: linear-gradient(120deg, var(--primary), var(--secondary)); color: #fff; box-shadow: 0 6px 16px rgba(16,126,175,.2); }
+.btn-primary { background: linear-gradient(120deg, var(--primary), var(--secondary)); color: #fff; box-shadow: 0 5px 14px rgba(16,126,175,.2); }
 .btn-soft { background: #FBEAF3; color: #762454; }
-.btn-outline { background: transparent; border: 1px solid currentColor; color: #762454; width: auto; padding: 8px 14px; font-size: 12px; }
+.btn-outline { background: transparent; border: 1px solid currentColor; color: #762454; width: auto; padding: 6px 12px; font-size: 11px; }
 
 /* صندوق التقرير اليومي الاحترافي */
-.report { display: none; margin-top: 16px; border: 1px solid #B7D8C9; background: #F0FAF4; border-radius: 18px; padding: 16px; }
+.report { display: none; margin-top: 14px; border: 1px solid #B7D8C9; background: #F0FAF4; border-radius: 16px; padding: 14px; }
 .report.show { display: block; }
-.daily-image-container { background: #FFFFFF; border: 2px solid #C2E0D1; border-radius: 16px; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
-.daily-report-card { background: #FBFDFC; border: 1px solid #E3EBE6; border-radius: 12px; padding: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.03); }
-.daily-report-header { font-weight: 800; font-size: 15px; color: var(--secondary); margin-bottom: 10px; border-bottom: 2px solid #E3EBE6; padding-bottom: 6px; display: flex; justify-content: space-between; align-items: center; }
-.daily-report-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; font-size: 12px; color: #30253A; }
-.daily-report-item { background: #FFF; padding: 8px 10px; border-radius: 8px; border: 1px solid #EEDCE8; }
+.daily-image-container { background: #FFFFFF; border: 2px solid #C2E0D1; border-radius: 14px; padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+.daily-report-card { background: #FBFDFC; border: 1px solid #E3EBE6; border-radius: 10px; padding: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.02); }
+.daily-report-header { font-weight: 800; font-size: 14px; color: var(--secondary); margin-bottom: 8px; border-bottom: 2px solid #E3EBE6; padding-bottom: 4px; display: flex; justify-content: space-between; align-items: center; }
+.daily-report-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; font-size: 11px; color: #30253A; }
+.daily-report-item { background: #FFF; padding: 6px 8px; border-radius: 6px; border: 1px solid #EEDCE8; }
 
-/* صندوق التقرير المجمع الشامل كصورة صفحة واحدة */
-.weekly-report-box { display: none; margin-top: 16px; border: 1px solid #B7D8C9; background: #F0FAF4; border-radius: 18px; padding: 16px; }
+/* صندوق التقرير الاسبوعي الشامل كصورة صفحة واحدة */
+.weekly-report-box { display: none; margin-top: 14px; border: 1px solid #B7D8C9; background: #F0FAF4; border-radius: 16px; padding: 14px; }
 .weekly-report-box.show { display: block; }
-.weekly-image-container { background: #FFFFFF; border: 2px solid #C2E0D1; border-radius: 16px; padding: 16px; margin-top: 12px; display: flex; flex-direction: column; gap: 12px; }
-.status-note { font-size: 12px; color: #6C827A; text-align: center; margin-top: 10px; }
+.weekly-image-container { background: #FFFFFF; border: 2px solid #C2E0D1; border-radius: 14px; padding: 14px; margin-top: 10px; display: flex; flex-direction: column; gap: 10px; }
+.status-note { font-size: 11px; color: #6C827A; text-align: center; margin-top: 8px; }
 </style>
 </head>
 <body>
 <main class="app-root">
   <div class="shell">
     
-    <!-- هيدر مع لوجو كبير ومرتبط افتراضياً بملف logo.png -->
+    <!-- هيدر مع لوجو ثابت ونظيف -->
     <header class="hero">
-      <div class="logo-slot" id="logoSlot" title="اضغط هنا لتغيير الشعار">
+      <div class="logo-slot" id="logoSlot">
         <img id="logoImg" src="logo.png" alt="شعار التطبيق" onerror="this.style.display='none'; document.getElementById('logoPlaceholder').style.display='block';">
-        <div class="logo-placeholder" id="logoPlaceholder" style="display:none;">اضغط لإضافة شعارك 📷</div>
+        <div class="logo-placeholder" id="logoPlaceholder" style="display:none;">الشعار</div>
       </div>
-      <input id="logoInput" type="file" accept="image/*" hidden>
-      <h1>متابعتي اليومية</h1>
+      <h1>المتابعة اليومية</h1>
       <p>خطوة صغيرة كل يوم بتفرق 💚</p>
     </header>
 
-    <!-- متابعة الأيام (تقويم مرن) -->
+    <!-- متابعة الأيام -->
     <section class="card" aria-labelledby="calendarTitle">
       <div class="section-head">
         <h2 id="calendarTitle">متابعة الأيام</h2>
@@ -146,7 +145,7 @@ textarea:focus { border-color: var(--secondary); box-shadow: 0 0 0 3px rgba(16,1
               <label class="option-card"><input type="radio" name="activity" value="تمارين في المنزل"><span>تمارين في المنزل</span></label>
               <label class="option-card"><input type="radio" name="activity" value="المشي خارج المنزل"><span>المشي خارج المنزل</span></label>
               <label class="option-card"><input type="radio" name="activity" value="الجيم"><span>الجيم</span></label>
-              <label class="option-card"><input type="radio" name="activity" value="لم أمارس نشاطًا"><span>لم أمارس نشاطًا</span></label>
+              <label class="option-card"><input type="radio" name="activity" value="لم أمارس نشاطا"><span>لم أمارس نشاطا</span></label>
             </div>
           </div>
 
@@ -191,7 +190,7 @@ textarea:focus { border-color: var(--secondary); box-shadow: 0 0 0 3px rgba(16,1
             <div class="choice-row" id="sleepChoices">
               <label class="choice"><input type="radio" name="sleep" value="جيد"><span>جيد</span></label>
               <label class="choice"><input type="radio" name="sleep" value="متقطع"><span>متقطع</span></label>
-              <label class="choice"><input type="radio" name="sleep" value="غير كافٍ"><span>غير كافٍ</span></label>
+              <label class="choice"><input type="radio" name="sleep" value="غير كاف"><span>غير كاف</span></label>
             </div>
           </div>
 
@@ -214,57 +213,57 @@ textarea:focus { border-color: var(--secondary); box-shadow: 0 0 0 3px rgba(16,1
 
           <div class="field notes-field">
             <label for="dailyNotes">📝 ملاحظات إضافية</label>
-            <textarea id="dailyNotes" name="dailyNotes" placeholder="اكتبي أي ملاحظات عن يومك، الشهية، الطاقة أو أي شيء تحبي تشاركيه..."></textarea>
+            <textarea id="dailyNotes" name="dailyNotes" placeholder="اكتبي أي ملاحظات عن يومك..."></textarea>
           </div>
 
         </div>
 
         <div class="actions">
           <button class="btn btn-soft" type="button" id="saveDayBtn">حفظ بيانات اليوم ✓</button>
-          <button class="btn btn-outline" type="button" id="prepareReportBtn">🎨 تجهيز التقرير اليومي الاحترافي</button>
-          <button class="btn btn-primary" type="button" id="prepareWeeklyReportBtn">📸 تجهيز التقرير المجمع كصورة (صفحة واحدة)</button>
+          <button class="btn btn-outline" type="button" id="prepareReportBtn">🎨  التقرير اليومي</button>
+          <button class="btn btn-primary" type="button" id="prepareWeeklyReportBtn">📸  التقرير الاسبوعي</button>
         </div>
         <p class="status-note">البيانات تحفظ تلقائياً في المعاينة على جهازك.</p>
       </form>
 
-      <!-- صندوق معاينة التقرير اليومي الاحترافي -->
+      <!-- صندوق معاينة التقرير اليومي  -->
       <div class="report" id="reportBox" aria-live="polite">
-        <div class="section-head" style="margin-bottom:8px;">
-          <h2>📋 التقرير اليومي الاحترافي</h2>
+        <div class="section-head" style="margin-bottom:6px;">
+          <h2>📋 التقرير اليومي</h2>
         </div>
         <div class="daily-image-container" id="dailyImageContainer">
-          <div style="text-align:center; font-weight:800; font-size:16px; color:#C93A8C; padding-bottom:6px; border-bottom:2px solid #E3EBE6;">
+          <div style="text-align:center; font-weight:800; font-size:15px; color:#C93A8C; padding-bottom:4px; border-bottom:2px solid #E3EBE6;">
             🌟 تقرير المتابعة اليومي 🌟
           </div>
           <div id="singleDailyReportContent"></div>
         </div>
-        <div class="actions" style="margin-top: 14px;">
-          <button class="btn btn-primary" type="button" id="downloadDailyImageBtn">📥 حفظ التقرير اليومي كصورة</button>
-          <button class="btn btn-soft" type="button" id="whatsappDailyBtn">مشاركة عبر واتساب 💚</button>
+        <div class="actions" style="margin-top: 10px;">
+          <button class="btn btn-primary" type="button" id="downloadDailyImageBtn">📥 حفظ التقرير كصورة</button>
+          <button class="btn btn-soft" type="button" id="shareDailyImageBtn">📤 مشاركة الصورة لأي تطبيق</button>
         </div>
-        <p class="status-note" id="shareNote">يمكنك حفظ التقرير اليومي كصورة مباشرة.</p>
+        <p class="status-note" id="shareNote">يمكنك حفظ التقرير أو مشاركته كصورة مباشرة.</p>
       </div>
 
-      <!-- صندوق التقرير المجمع كصورة صفحة واحدة مدمجة -->
+      <!-- صندوق التقرير الاسبوعي -->
       <div class="weekly-report-box" id="weeklyReportBox" aria-live="polite">
-        <div class="section-head" style="margin-bottom:8px;">
-          <h2>📋 التقرير المجمع الشامل</h2>
+        <div class="section-head" style="margin-bottom:6px;">
+          <h2>📋 التقرير الاسبوعي</h2>
           <span class="muted" id="reportDateRange"></span>
         </div>
         <p class="muted">صفحة مدمجة تضم كافة الأيام المسجلة ببطاقات احترافية:</p>
         
         <div class="weekly-image-container" id="weeklyImageContainer">
-          <div style="text-align:center; font-weight:800; font-size:16px; color:#C93A8C; padding-bottom:6px; border-bottom:2px solid #E3EBE6;">
+          <div style="text-align:center; font-weight:800; font-size:15px; color:#C93A8C; padding-bottom:4px; border-bottom:2px solid #E3EBE6;">
             🌟 تقرير المتابعة الشامل 🌟
           </div>
-          <div id="weeklyDaysList" style="display:flex; flex-direction:column; gap:10px;"></div>
+          <div id="weeklyDaysList" style="display:flex; flex-direction:column; gap:8px;"></div>
         </div>
 
-        <div class="actions" style="margin-top: 14px;">
-          <button class="btn btn-primary" type="button" id="downloadImageBtn">📥 حفظ التقرير كصورة (PNG)</button>
-          <button class="btn btn-soft" type="button" id="whatsappBtn">مشاركة النص عبر واتساب 💚</button>
+        <div class="actions" style="margin-top: 10px;">
+          <button class="btn btn-primary" type="button" id="downloadImageBtn">📥 حفظ التقرير كصورة</button>
+          <button class="btn btn-soft" type="button" id="shareImageBtn">📤 مشاركة التقرير</button>
         </div>
-        <p class="status-note" id="weeklyShareNote">يمكنك حفظ التقرير كصورة مباشرة على جهازك.</p>
+        <p class="status-note" id="weeklyShareNote">يمكنك حفظ التقرير أو مشاركته كصورة مباشرة.</p>
       </div>
 
     </section>
@@ -275,8 +274,7 @@ textarea:focus { border-color: var(--secondary); box-shadow: 0 0 0 3px rgba(16,1
 const state = { 
   selectedDate: new Date(), 
   viewOffsetDate: new Date(),
-  records: JSON.parse(localStorage.getItem('daily_records') || '{}'), 
-  logoUrl: null 
+  records: JSON.parse(localStorage.getItem('daily_records') || '{}')
 };
 
 const $ = (id) => document.getElementById(id);
@@ -371,7 +369,7 @@ $('saveDayBtn').addEventListener('click', () => {
   renderCalendar();
 });
 
-// تجهيز التقرير اليومي الاحترافي
+// تجهيز التقرير اليومي 
 $('prepareReportBtn').addEventListener('click', () => {
   const d = getFormData();
   const dateStr = formatDate(state.selectedDate);
@@ -390,15 +388,12 @@ $('prepareReportBtn').addEventListener('click', () => {
         <div class="daily-report-item">🍫 الحلويات: <b>${d.sweets || 'غير مسجل'}</b></div>
         <div class="daily-report-item">😴 النوم: <b>${d.sleep || 'غير مسجل'}</b></div>
       </div>
-      ${d.difficulty && d.difficulty.length ? `<div style="margin-top:8px; font-size:11px; color:#C93A8C;">🧩 الصعوبات: ${d.difficulty.join('، ')} ${d.otherDifficulty ? '(' + d.otherDifficulty + ')' : ''}</div>` : ''}
-      ${d.dailyNotes ? `<div style="margin-top:6px; font-size:11px; color:#30253A; background:#FFF; padding:6px; border-radius:6px; border:1px solid #EEDCE8;">📝 <b>ملاحظات:</b> ${d.dailyNotes}</div>` : ''}
+      ${d.difficulty && d.difficulty.length ? `<div style="margin-top:6px; font-size:11px; color:#C93A8C;">🧩 الصعوبات: ${d.difficulty.join('، ')} ${d.otherDifficulty ? '(' + d.otherDifficulty + ')' : ''}</div>` : ''}
+      ${d.dailyNotes ? `<div style="margin-top:4px; font-size:11px; color:#30253A; background:#FFF; padding:4px 6px; border-radius:4px; border:1px solid #EEDCE8;">📝 <b>ملاحظات:</b> ${d.dailyNotes}</div>` : ''}
     </div>
   `;
 
   $('singleDailyReportContent').innerHTML = cardHtml;
-  
-  window.lastDailyReportText = `📋 متابعة يوم ${dateStr}\n- النشاط: ${d.activity || '-'}\n- المياه: ${d.water || '-'}\n- الوجبات: ${d.meals || '-'}\n- البروتين: ${d.protein || '-'}\n- الحلويات: ${d.sweets || '-'}\n- النوم: ${d.sleep || '-'}\n${d.dailyNotes ? '📝 ملاحظات: ' + d.dailyNotes : ''}\n\nكل يوم خطوة للأفضل 💚`;
-
   $('weeklyReportBox').classList.remove('show');
   $('reportBox').classList.add('show');
   $('reportBox').scrollIntoView({ behavior: 'smooth' });
@@ -419,16 +414,39 @@ $('downloadDailyImageBtn').addEventListener('click', async () => {
   }
 });
 
-$('whatsappDailyBtn').addEventListener('click', () => {
-  const url = 'https://wa.me/?text=' + encodeURIComponent(window.lastDailyReportText || '');
-  window.open(url, '_blank', 'noopener');
+// مشاركة التقرير
+$('shareDailyImageBtn').addEventListener('click', async () => {
+  const container = $('dailyImageContainer');
+  $('shareNote').textContent = 'جاري تجهيز الصورة للمشاركة...';
+  try {
+    const canvas = await html2canvas(container, { scale: 2, backgroundColor: '#FFFFFF' });
+    canvas.toBlob(async (blob) => {
+      const file = new File([blob], 'التقرير-اليومي.png', { type: 'image/png' });
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({
+          files: [file],
+          title: 'تقرير المتابعة اليومي',
+          text: 'إليك تقرير المتابعة اليومي الخاص بي 💚'
+        });
+        $('shareNote').textContent = 'تم فتح نافذة المشاركة بنجاح! ✓';
+      } else {
+        // بديل في حال عدم دعم المتصفح لمشاركة الملفات
+        const link = document.createElement('a');
+        link.href = canvas.toDataURL('image/png');
+        link.download = 'التقرير-اليومي.png';
+        link.click();
+        $('shareNote').textContent = 'تم حفظ الصورة، يمكنك مشاركتها يدويًا من ألبوم الصور.';
+      }
+    }, 'image/png');
+  } catch (err) {
+    $('shareNote').textContent = 'تعذرت المشاركة المباشرة.';
+  }
 });
 
-// تجهيز التقرير المجمع الشامل كصورة صفحة واحدة مدمجة
+// تجهيز التقرير الاسبوعي
 $('prepareWeeklyReportBtn').addEventListener('click', () => {
   const baseDate = new Date(state.viewOffsetDate);
   let daysHtml = '';
-  let fullTextLines = ['🌟 *تقرير المتابعة الشامل* 🌟\n'];
 
   for (let i = 6; i >= 0; i--) {
     const date = new Date(baseDate); date.setDate(baseDate.getDate() - i);
@@ -455,12 +473,6 @@ $('prepareWeeklyReportBtn').addEventListener('click', () => {
           ${d.dailyNotes ? `<div style="margin-top:4px; font-size:11px; color:#30253A;">📝 ملاحظات: ${d.dailyNotes}</div>` : ''}
         </div>
       `;
-      fullTextLines.push(`📅 *${dateStr}*`);
-      fullTextLines.push(`- النشاط: ${d.activity || '-'} | المياه: ${d.water || '-'}`);
-      fullTextLines.push(`- الوجبات: ${d.meals || '-'} | البروتين: ${d.protein || '-'}`);
-      fullTextLines.push(`- النوم: ${d.sleep || '-'}`);
-      if(d.dailyNotes) fullTextLines.push(`- ملاحظات: ${d.dailyNotes}`);
-      fullTextLines.push('');
     } else {
       daysHtml += `
         <div class="daily-report-card" style="opacity: 0.5;">
@@ -474,7 +486,6 @@ $('prepareWeeklyReportBtn').addEventListener('click', () => {
   }
 
   $('weeklyDaysList').innerHTML = daysHtml;
-  window.lastGeneratedReportText = fullTextLines.join('\n');
   $('reportBox').classList.remove('show');
   $('weeklyReportBox').classList.add('show');
   $('weeklyReportBox').scrollIntoView({ behavior: 'smooth' });
@@ -482,7 +493,7 @@ $('prepareWeeklyReportBtn').addEventListener('click', () => {
 
 $('downloadImageBtn').addEventListener('click', async () => {
   const container = $('weeklyImageContainer');
-  $('weeklyShareNote').textContent = 'جاري تجهيز وتصدير التقرير كصورة صفحة واحدة...';
+  $('weeklyShareNote').textContent = 'جاري تجهيز وتصدير التقرير كصورة...';
   try {
     const canvas = await html2canvas(container, { scale: 2, backgroundColor: '#FFFFFF' });
     const link = document.createElement('a');
@@ -495,29 +506,36 @@ $('downloadImageBtn').addEventListener('click', async () => {
   }
 });
 
-$('whatsappBtn').addEventListener('click', () => {
-  const url = 'https://wa.me/?text=' + encodeURIComponent(window.lastGeneratedReportText || '');
-  window.open(url, '_blank', 'noopener');
+// مشاركة التقرير الاسبوعي
+$('shareImageBtn').addEventListener('click', async () => {
+  const container = $('weeklyImageContainer');
+  $('weeklyShareNote').textContent = 'جاري تجهيز الصورة للمشاركة...';
+  try {
+    const canvas = await html2canvas(container, { scale: 2, backgroundColor: '#FFFFFF' });
+    canvas.toBlob(async (blob) => {
+      const file = new File([blob], 'التقرير-الاسبوعي.png', { type: 'image/png' });
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({
+          files: [file],
+          title: 'تقرير المتابعة الاسبوعي',
+          text: 'إليك تقرير المتابعة الاسبوعي الخاص بي 💚'
+        });
+        $('weeklyShareNote').textContent = 'تم فتح نافذة المشاركة بنجاح! ✓';
+      } else {
+        const link = document.createElement('a');
+        link.href = canvas.toDataURL('image/png');
+        link.download = 'التقرير-الاسبوعي.png';
+        link.click();
+        $('weeklyShareNote').textContent = 'تم حفظ الصورة، يمكنك مشاركتها يدويًا من ألبوم الصور.';
+      }
+    }, 'image/png');
+  } catch (err) {
+    $('weeklyShareNote').textContent = 'تعذرت المشاركة المباشرة.';
+  }
 });
 
 $('prevDays').addEventListener('click', () => { state.viewOffsetDate.setDate(state.viewOffsetDate.getDate() - 7); renderCalendar(); });
 $('nextDays').addEventListener('click', () => { state.viewOffsetDate.setDate(state.viewOffsetDate.getDate() + 7); renderCalendar(); });
-
-// تغيير اللوجو عند الضغط عليه
-$('logoSlot').addEventListener('click', () => $('logoInput').click());
-$('logoInput').addEventListener('change', event => {
-  const file = event.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    $('logoImg.src') = e.target.result;
-    let img = $('logoImg');
-    img.src = e.target.result;
-    img.style.display = 'block';
-    $('logoPlaceholder').style.display = 'none';
-  };
-  reader.readAsDataURL(file);
-});
 
 selectDate(state.selectedDate);
 </script>
