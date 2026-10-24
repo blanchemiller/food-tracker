@@ -1,0 +1,525 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>متابعتي اليومية</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<!-- مكتبة html2canvas لتحويل التقارير إلى صور -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+:root {
+  --primary: #C93A8C;
+  --secondary: #107EAF;
+  --bg-color: #F8FAFC;
+  --card-bg: #FFFFFF;
+  --text-main: #30253A;
+  --border-color: #E8DCE8;
+}
+* { box-sizing: border-box; }
+body { margin: 0; font-family: "Tajawal", sans-serif; background: var(--bg-color); color: var(--text-main); }
+.app-root { min-height: 100vh; padding: 16px 12px; display: flex; justify-content: center; }
+.shell { width: 100%; max-width: 560px; display: flex; flex-direction: column; gap: 16px; }
+
+/* هيدر مع لوجو كبير وبارز ومخصص للضغط أو التحميل التلقائي */
+.hero { background: #FFFFFF; border: 1px solid var(--border-color); border-radius: 22px; padding: 22px; text-align: center; box-shadow: 0 5px 20px rgba(67,43,77,.055); }
+.logo-slot { width: 100px; height: 100px; margin: 0 auto 12px; border-radius: 24px; background: #F8FAFC; border: 2px dashed #CBD5E1; display: flex; align-items: center; justify-content: center; overflow: hidden; cursor: pointer; transition: border-color 0.2s; }
+.logo-slot:hover { border-color: var(--primary); }
+.logo-slot img { width: 100%; height: 100%; object-fit: contain; background: #fff; }
+.logo-placeholder { font-size: 12px; color: #64748B; text-align: center; font-weight: 700; line-height: 1.4; padding: 10px; }
+h1 { font-size: 24px; font-weight: 800; margin: 0 0 4px; color: var(--text-main); }
+.hero p { margin: 0; font-size: 13px; color: #6C827A; }
+
+/* البطاقات العامة */
+.card { background: rgba(255,255,255,.97); border: 1px solid #E4E8F0; border-radius: 22px; padding: 20px; box-shadow: 0 12px 30px rgba(44,55,83,.055); }
+.section-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid #E8EEE6; }
+h2 { margin: 0; font-size: 20px; font-weight: 800; color: #762454; }
+.muted { font-size: 12px; color: #6C827A; }
+
+/* التقويم المرن */
+.month-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.month-label { font-weight: 800; font-size: 16px; }
+.nav-btn { border: 1px solid #E5D7E7; background: #FFF5FA; color: var(--primary); width: 36px; height: 36px; border-radius: 12px; cursor: pointer; font-size: 18px; font-weight: bold; }
+.calendar-scroll { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 6px; scrollbar-width: thin; }
+.day { min-width: 54px; height: 60px; border: 1px solid #E3EBE6; border-radius: 12px; background: #FBFDFC; padding: 4px; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; font: inherit; flex-shrink: 0; }
+.day .day-name { font-size: 10px; color: #71867E; font-weight: 700; }
+.day .num { font-size: 14px; font-weight: 800; }
+.day .dot { width: 5px; height: 5px; border-radius: 50%; background: transparent; }
+.day.done .dot { background: var(--primary); }
+.day.selected { background: linear-gradient(135deg, var(--primary), var(--secondary)); border-color: transparent; color: #fff; box-shadow: 0 5px 13px rgba(16,126,175,.22); }
+.day.selected .day-name, .day.selected .dot { color: #fff; background: #fff; }
+
+.progress-wrap { margin-top: 12px; display: flex; align-items: center; gap: 8px; }
+.progress-track { height: 7px; flex: 1; border-radius: 20px; background: #E4ECE7; overflow: hidden; }
+.progress-fill { height: 100%; background: linear-gradient(90deg, var(--primary), var(--secondary)); width: 0; border-radius: 20px; transition: width .2s; }
+
+/* النموذج والمدخلات تحت بعضها */
+.form-grid { display: flex; flex-direction: column; gap: 14px; }
+.field { padding: 16px; border: 1px solid #E5E7F0; border-radius: 16px; background: #FFFFFF; box-shadow: 0 4px 14px rgba(52,57,87,.035); }
+label, .field-label { display: block; font-weight: 800; font-size: 15px; margin-bottom: 10px; color: #762454; }
+.option-grid, .choice-row, .checkbox-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+.option-card, .choice, .check-item { position: relative; display: flex; cursor: pointer; }
+.option-card input, .choice input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.option-card span, .choice span, .check-item { display: flex; align-items: center; justify-content: center; text-align: center; gap: 6px; width: 100%; min-height: 42px; padding: 8px; border: 1px solid #E8DCE8; border-radius: 11px; background: #FFFFFF; color: #44344B; font-size: 13px; font-weight: 600; cursor: pointer; transition: all .15s; }
+.option-card input:checked + span, .choice input:checked + span, .check-item:has(input:checked) { background: #FCEAF4; border-color: var(--primary); color: #8B2865; font-weight: 700; box-shadow: 0 0 0 2px rgba(201,58,140,.11); }
+.check-item { align-items: center; justify-content: flex-start; padding: 10px 12px; border-radius: 11px; border: 1px solid #E8DCE8; background: #FFF; font-size: 13px; font-weight: 600; }
+.check-item input { accent-color: var(--primary); width: 16px; height: 16px; margin-left: 6px; }
+
+textarea { width: 100%; border: 1px solid #D9E5DE; border-radius: 12px; padding: 12px; font-family: inherit; font-size: 13px; resize: vertical; min-height: 90px; outline: none; background: #FBFDFC; }
+textarea:focus { border-color: var(--secondary); box-shadow: 0 0 0 3px rgba(16,126,175,.12); }
+
+/* الأزرار */
+.actions { display: flex; flex-direction: column; gap: 10px; margin-top: 16px; }
+.btn { font: inherit; border: 0; border-radius: 13px; padding: 14px; cursor: pointer; font-weight: 700; font-size: 15px; text-align: center; width: 100%; transition: transform .15s; }
+.btn:active { transform: scale(0.98); }
+.btn-primary { background: linear-gradient(120deg, var(--primary), var(--secondary)); color: #fff; box-shadow: 0 6px 16px rgba(16,126,175,.2); }
+.btn-soft { background: #FBEAF3; color: #762454; }
+.btn-outline { background: transparent; border: 1px solid currentColor; color: #762454; width: auto; padding: 8px 14px; font-size: 12px; }
+
+/* صندوق التقرير اليومي الاحترافي */
+.report { display: none; margin-top: 16px; border: 1px solid #B7D8C9; background: #F0FAF4; border-radius: 18px; padding: 16px; }
+.report.show { display: block; }
+.daily-image-container { background: #FFFFFF; border: 2px solid #C2E0D1; border-radius: 16px; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+.daily-report-card { background: #FBFDFC; border: 1px solid #E3EBE6; border-radius: 12px; padding: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.03); }
+.daily-report-header { font-weight: 800; font-size: 15px; color: var(--secondary); margin-bottom: 10px; border-bottom: 2px solid #E3EBE6; padding-bottom: 6px; display: flex; justify-content: space-between; align-items: center; }
+.daily-report-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; font-size: 12px; color: #30253A; }
+.daily-report-item { background: #FFF; padding: 8px 10px; border-radius: 8px; border: 1px solid #EEDCE8; }
+
+/* صندوق التقرير المجمع الشامل كصورة صفحة واحدة */
+.weekly-report-box { display: none; margin-top: 16px; border: 1px solid #B7D8C9; background: #F0FAF4; border-radius: 18px; padding: 16px; }
+.weekly-report-box.show { display: block; }
+.weekly-image-container { background: #FFFFFF; border: 2px solid #C2E0D1; border-radius: 16px; padding: 16px; margin-top: 12px; display: flex; flex-direction: column; gap: 12px; }
+.status-note { font-size: 12px; color: #6C827A; text-align: center; margin-top: 10px; }
+</style>
+</head>
+<body>
+<main class="app-root">
+  <div class="shell">
+    
+    <!-- هيدر مع لوجو كبير ومرتبط افتراضياً بملف logo.png -->
+    <header class="hero">
+      <div class="logo-slot" id="logoSlot" title="اضغط هنا لتغيير الشعار">
+        <img id="logoImg" src="logo.png" alt="شعار التطبيق" onerror="this.style.display='none'; document.getElementById('logoPlaceholder').style.display='block';">
+        <div class="logo-placeholder" id="logoPlaceholder" style="display:none;">اضغط لإضافة شعارك 📷</div>
+      </div>
+      <input id="logoInput" type="file" accept="image/*" hidden>
+      <h1>متابعتي اليومية</h1>
+      <p>خطوة صغيرة كل يوم بتفرق 💚</p>
+    </header>
+
+    <!-- متابعة الأيام (تقويم مرن) -->
+    <section class="card" aria-labelledby="calendarTitle">
+      <div class="section-head">
+        <h2 id="calendarTitle">متابعة الأيام</h2>
+        <span class="muted" id="completedCount">0 أيام مسجلة</span>
+      </div>
+      <div class="month-nav">
+        <button class="nav-btn" id="prevDays" aria-label="الأيام السابقة">›</button>
+        <div class="month-label" id="monthLabel">فترة المتابعة</div>
+        <button class="nav-btn" id="nextDays" aria-label="الأيام التالية">‹</button>
+      </div>
+      <div class="calendar-scroll" id="calendar"></div>
+      <div class="progress-wrap">
+        <div class="progress-track"><div class="progress-fill" id="monthProgress"></div></div>
+        <span class="muted" id="progressText">0 من 7 أيام</span>
+      </div>
+    </section>
+
+    <!-- تقرير اليوم -->
+    <section class="card" aria-labelledby="formTitle">
+      <div class="section-head">
+        <div>
+          <h2 id="formTitle">تقرير اليوم</h2>
+          <div class="muted" id="selectedDateLabel">السبت 24 أكتوبر 2026</div>
+        </div>
+        <span class="muted" id="saveStatus">مسودة غير محفوظة</span>
+      </div>
+      
+      <form id="dailyForm">
+        <div class="form-grid">
+          
+          <div class="field">
+            <label for="activity">🏃 النشاط البدني</label>
+            <div class="option-grid" id="activityChoices">
+              <label class="option-card"><input type="radio" name="activity" value="تمارين في المنزل"><span>تمارين في المنزل</span></label>
+              <label class="option-card"><input type="radio" name="activity" value="المشي خارج المنزل"><span>المشي خارج المنزل</span></label>
+              <label class="option-card"><input type="radio" name="activity" value="الجيم"><span>الجيم</span></label>
+              <label class="option-card"><input type="radio" name="activity" value="لم أمارس نشاطًا"><span>لم أمارس نشاطًا</span></label>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="water">💧 شرب المياه</label>
+            <div class="option-grid" id="waterChoices" style="grid-template-columns: repeat(3, 1fr);">
+              <label class="option-card"><input type="radio" name="water" value="500 مل"><span>500 مل</span></label>
+              <label class="option-card"><input type="radio" name="water" value="1000 مل"><span>1000 مل</span></label>
+              <label class="option-card"><input type="radio" name="water" value="1500 مل"><span>1500 مل</span></label>
+              <label class="option-card"><input type="radio" name="water" value="2000 مل"><span>2000 مل</span></label>
+              <label class="option-card"><input type="radio" name="water" value="2500 مل"><span>2500 مل</span></label>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="meals">🍽️ الالتزام بمواعيد الوجبات</label>
+            <div class="option-grid" id="mealsChoices">
+              <label class="option-card"><input type="radio" name="meals" value="التزمت"><span>التزمت</span></label>
+              <label class="option-card"><input type="radio" name="meals" value="تغيير بسيط"><span>تغيير بسيط</span></label>
+              <label class="option-card" style="grid-column: span 2;"><input type="radio" name="meals" value="لم أتمكن من الالتزام"><span>لم أتمكن من الالتزام</span></label>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="protein">🥚 كمية البروتين</label>
+            <div class="option-grid" id="proteinChoices">
+              <label class="option-card"><input type="radio" name="protein" value="حققت الكمية"><span>حققت البروتين</span></label>
+              <label class="option-card"><input type="radio" name="protein" value="أقل من المطلوب"><span>أقل من المطلوب</span></label>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="sweets">🍫 السكريات والحلويات</label>
+            <div class="option-grid" id="sweetsChoices">
+              <label class="option-card"><input type="radio" name="sweets" value="لا توجد إضافات"><span>بدون سكريات</span></label>
+              <label class="option-card"><input type="radio" name="sweets" value="إضافات خارج الخطة"><span>إضافات خارج الخطة</span></label>
+            </div>
+          </div>
+
+          <div class="field sleep-field" id="sleepField">
+            <span class="field-label">😴 جودة النوم</span>
+            <div class="choice-row" id="sleepChoices">
+              <label class="choice"><input type="radio" name="sleep" value="جيد"><span>جيد</span></label>
+              <label class="choice"><input type="radio" name="sleep" value="متقطع"><span>متقطع</span></label>
+              <label class="choice"><input type="radio" name="sleep" value="غير كافٍ"><span>غير كافٍ</span></label>
+            </div>
+          </div>
+
+          <div class="field">
+            <span class="field-label">🧩 أكبر صعوبة واجهتك؟</span>
+            <div class="checkbox-list" id="difficultyChoices">
+              <label class="check-item"><input type="checkbox" name="difficulty" value="لم أواجه صعوبات"> لم أواجه صعوبات</label>
+              <label class="check-item"><input type="checkbox" name="difficulty" value="الجوع أو عدم الشبع"> الجوع أو عدم الشبع</label>
+              <label class="check-item"><input type="checkbox" name="difficulty" value="الرغبة في الحلويات أو الأكل العشوائي"> الرغبة في الحلويات أو الأكل العشوائي</label>
+              <label class="check-item"><input type="checkbox" name="difficulty" value="صعوبة النشاط البدني"> صعوبة النشاط البدني</label>
+              <label class="check-item"><input type="checkbox" name="difficulty" value="قلة النوم أو الإرهاق"> قلة النوم أو الإرهاق</label>
+              <label class="check-item"><input type="checkbox" name="difficulty" value="سبب آخر"> سبب آخر</label>
+            </div>
+          </div>
+
+          <div class="field" id="otherDifficultyWrap" hidden>
+            <label for="otherDifficulty">تفاصيل السبب الآخر</label>
+            <textarea id="otherDifficulty" name="otherDifficulty" placeholder="اكتبي التفاصيل هنا..."></textarea>
+          </div>
+
+          <div class="field notes-field">
+            <label for="dailyNotes">📝 ملاحظات إضافية</label>
+            <textarea id="dailyNotes" name="dailyNotes" placeholder="اكتبي أي ملاحظات عن يومك، الشهية، الطاقة أو أي شيء تحبي تشاركيه..."></textarea>
+          </div>
+
+        </div>
+
+        <div class="actions">
+          <button class="btn btn-soft" type="button" id="saveDayBtn">حفظ بيانات اليوم ✓</button>
+          <button class="btn btn-outline" type="button" id="prepareReportBtn">🎨 تجهيز التقرير اليومي الاحترافي</button>
+          <button class="btn btn-primary" type="button" id="prepareWeeklyReportBtn">📸 تجهيز التقرير المجمع كصورة (صفحة واحدة)</button>
+        </div>
+        <p class="status-note">البيانات تحفظ تلقائياً في المعاينة على جهازك.</p>
+      </form>
+
+      <!-- صندوق معاينة التقرير اليومي الاحترافي -->
+      <div class="report" id="reportBox" aria-live="polite">
+        <div class="section-head" style="margin-bottom:8px;">
+          <h2>📋 التقرير اليومي الاحترافي</h2>
+        </div>
+        <div class="daily-image-container" id="dailyImageContainer">
+          <div style="text-align:center; font-weight:800; font-size:16px; color:#C93A8C; padding-bottom:6px; border-bottom:2px solid #E3EBE6;">
+            🌟 تقرير المتابعة اليومي 🌟
+          </div>
+          <div id="singleDailyReportContent"></div>
+        </div>
+        <div class="actions" style="margin-top: 14px;">
+          <button class="btn btn-primary" type="button" id="downloadDailyImageBtn">📥 حفظ التقرير اليومي كصورة</button>
+          <button class="btn btn-soft" type="button" id="whatsappDailyBtn">مشاركة عبر واتساب 💚</button>
+        </div>
+        <p class="status-note" id="shareNote">يمكنك حفظ التقرير اليومي كصورة مباشرة.</p>
+      </div>
+
+      <!-- صندوق التقرير المجمع كصورة صفحة واحدة مدمجة -->
+      <div class="weekly-report-box" id="weeklyReportBox" aria-live="polite">
+        <div class="section-head" style="margin-bottom:8px;">
+          <h2>📋 التقرير المجمع الشامل</h2>
+          <span class="muted" id="reportDateRange"></span>
+        </div>
+        <p class="muted">صفحة مدمجة تضم كافة الأيام المسجلة ببطاقات احترافية:</p>
+        
+        <div class="weekly-image-container" id="weeklyImageContainer">
+          <div style="text-align:center; font-weight:800; font-size:16px; color:#C93A8C; padding-bottom:6px; border-bottom:2px solid #E3EBE6;">
+            🌟 تقرير المتابعة الشامل 🌟
+          </div>
+          <div id="weeklyDaysList" style="display:flex; flex-direction:column; gap:10px;"></div>
+        </div>
+
+        <div class="actions" style="margin-top: 14px;">
+          <button class="btn btn-primary" type="button" id="downloadImageBtn">📥 حفظ التقرير كصورة (PNG)</button>
+          <button class="btn btn-soft" type="button" id="whatsappBtn">مشاركة النص عبر واتساب 💚</button>
+        </div>
+        <p class="status-note" id="weeklyShareNote">يمكنك حفظ التقرير كصورة مباشرة على جهازك.</p>
+      </div>
+
+    </section>
+  </div>
+</main>
+
+<script>
+const state = { 
+  selectedDate: new Date(), 
+  viewOffsetDate: new Date(),
+  records: JSON.parse(localStorage.getItem('daily_records') || '{}'), 
+  logoUrl: null 
+};
+
+const $ = (id) => document.getElementById(id);
+const monthNames = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+const weekdays = ['الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
+
+function dateKey(date) { 
+  return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`; 
+}
+
+function formatDate(date) { 
+  return `${weekdays[date.getDay()]} ${date.getDate()} ${monthNames[date.getMonth()]} ${date.getFullYear()}`; 
+}
+
+function renderCalendar() {
+  const cal = $('calendar'); cal.innerHTML = '';
+  let completed = 0;
+  let totalDaysShown = 7;
+
+  const baseDate = new Date(state.viewOffsetDate);
+  
+  for (let i = totalDaysShown - 1; i >= 0; i--) {
+    const date = new Date(baseDate); 
+    date.setDate(baseDate.getDate() - i);
+    
+    const key = dateKey(date), done = !!state.records[key];
+    if (done) completed++;
+    
+    const btn = document.createElement('button'); 
+    btn.type = 'button'; 
+    btn.className = 'day' + (done ? ' done' : '') + (dateKey(date) === dateKey(state.selectedDate) ? ' selected' : '');
+    btn.innerHTML = `<span class="day-name">${weekdays[date.getDay()]}</span><span class="num">${date.getDate()}</span><span class="dot"></span>`;
+    btn.addEventListener('click', () => selectDate(date)); 
+    cal.appendChild(btn);
+  }
+
+  const oldestDate = new Date(baseDate); oldestDate.setDate(baseDate.getDate() - (totalDaysShown - 1));
+  $('monthLabel').textContent = `${oldestDate.getDate()} ${monthNames[oldestDate.getMonth()]} - ${baseDate.getDate()} ${monthNames[baseDate.getMonth()]}`;
+  
+  $('completedCount').textContent = `${completed} أيام مسجلة`;
+  $('monthProgress').style.width = `${Math.round(completed / totalDaysShown * 100)}%`;
+  $('progressText').textContent = `${completed} من ${totalDaysShown} أيام`;
+}
+
+function getFormData() {
+  const form = $('dailyForm'); 
+  const data = {};
+  ['otherDifficulty', 'dailyNotes'].forEach(id => data[id] = $(id).value.trim());
+  ['water', 'activity', 'meals', 'protein', 'sweets'].forEach(name => data[name] = form.querySelector(`input[name="${name}"]:checked`)?.value || '');
+  data.sleep = form.querySelector('input[name="sleep"]:checked')?.value || '';
+  data.difficulty = [...form.querySelectorAll('input[name="difficulty"]:checked')].map(el => el.value);
+  return data;
+}
+
+function fillForm(data = {}) {
+  ['otherDifficulty', 'dailyNotes'].forEach(id => $(id).value = data[id] || '');
+  ['water', 'activity', 'meals', 'protein', 'sweets'].forEach(name => {
+    document.querySelectorAll(`input[name="${name}"]`).forEach(el => el.checked = (el.value === (data[name] || '')));
+  });
+  document.querySelectorAll('input[name="sleep"]').forEach(el => el.checked = (el.value === (data.sleep || '')));
+  document.querySelectorAll('input[name="difficulty"]').forEach(el => el.checked = (data.difficulty || []).includes(el.value));
+  updateOtherDifficulty(); 
+  $('reportBox').classList.remove('show');
+  $('weeklyReportBox').classList.remove('show');
+  $('saveStatus').textContent = data && Object.values(data).some(v => Array.isArray(v) ? v.length > 0 : !!v) ? 'بيانات محفوظة ✓' : 'مسودة جديدة';
+}
+
+function selectDate(date) {
+  state.selectedDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  $('selectedDateLabel').textContent = formatDate(state.selectedDate);
+  fillForm(state.records[dateKey(state.selectedDate)] || {}); 
+  renderCalendar();
+}
+
+function updateOtherDifficulty() {
+  const other = document.querySelector('input[name="difficulty"][value="سبب آخر"]');
+  $('otherDifficultyWrap').hidden = !other || !other.checked;
+  const none = document.querySelector('input[name="difficulty"][value="لم أواجه صعوبات"]');
+  if (none && none.checked) {
+    document.querySelectorAll('input[name="difficulty"]').forEach(el => { if (el !== none) el.checked = false; });
+  } else if (none) {
+    none.checked = false;
+  }
+}
+
+document.querySelectorAll('input[name="difficulty"]').forEach(el => el.addEventListener('change', updateOtherDifficulty));
+
+$('saveDayBtn').addEventListener('click', () => {
+  state.records[dateKey(state.selectedDate)] = getFormData();
+  localStorage.setItem('daily_records', JSON.stringify(state.records));
+  $('saveStatus').textContent = 'اتحفظت في المعاينة ✓'; 
+  renderCalendar();
+});
+
+// تجهيز التقرير اليومي الاحترافي
+$('prepareReportBtn').addEventListener('click', () => {
+  const d = getFormData();
+  const dateStr = formatDate(state.selectedDate);
+  
+  const cardHtml = `
+    <div class="daily-report-card">
+      <div class="daily-report-header">
+        <span>📅 ${dateStr}</span>
+        <span style="color:#C93A8C; font-size:12px;">مكتمل ✓</span>
+      </div>
+      <div class="daily-report-grid">
+        <div class="daily-report-item">🏃 النشاط: <b>${d.activity || 'غير مسجل'}</b></div>
+        <div class="daily-report-item">💧 المياه: <b>${d.water || 'غير مسجل'}</b></div>
+        <div class="daily-report-item">🍽️ الوجبات: <b>${d.meals || 'غير مسجل'}</b></div>
+        <div class="daily-report-item">🥚 البروتين: <b>${d.protein || 'غير مسجل'}</b></div>
+        <div class="daily-report-item">🍫 الحلويات: <b>${d.sweets || 'غير مسجل'}</b></div>
+        <div class="daily-report-item">😴 النوم: <b>${d.sleep || 'غير مسجل'}</b></div>
+      </div>
+      ${d.difficulty && d.difficulty.length ? `<div style="margin-top:8px; font-size:11px; color:#C93A8C;">🧩 الصعوبات: ${d.difficulty.join('، ')} ${d.otherDifficulty ? '(' + d.otherDifficulty + ')' : ''}</div>` : ''}
+      ${d.dailyNotes ? `<div style="margin-top:6px; font-size:11px; color:#30253A; background:#FFF; padding:6px; border-radius:6px; border:1px solid #EEDCE8;">📝 <b>ملاحظات:</b> ${d.dailyNotes}</div>` : ''}
+    </div>
+  `;
+
+  $('singleDailyReportContent').innerHTML = cardHtml;
+  
+  window.lastDailyReportText = `📋 متابعة يوم ${dateStr}\n- النشاط: ${d.activity || '-'}\n- المياه: ${d.water || '-'}\n- الوجبات: ${d.meals || '-'}\n- البروتين: ${d.protein || '-'}\n- الحلويات: ${d.sweets || '-'}\n- النوم: ${d.sleep || '-'}\n${d.dailyNotes ? '📝 ملاحظات: ' + d.dailyNotes : ''}\n\nكل يوم خطوة للأفضل 💚`;
+
+  $('weeklyReportBox').classList.remove('show');
+  $('reportBox').classList.add('show');
+  $('reportBox').scrollIntoView({ behavior: 'smooth' });
+});
+
+$('downloadDailyImageBtn').addEventListener('click', async () => {
+  const container = $('dailyImageContainer');
+  $('shareNote').textContent = 'جاري تصدير التقرير اليومي كصورة...';
+  try {
+    const canvas = await html2canvas(container, { scale: 2, backgroundColor: '#FFFFFF' });
+    const link = document.createElement('a');
+    link.href = canvas.toDataURL('image/png');
+    link.download = 'التقرير-اليومي.png';
+    link.click();
+    $('shareNote').textContent = 'تم تحميل التقرير اليومي كصورة بنجاح! ✓';
+  } catch (err) {
+    $('shareNote').textContent = 'تعذر تصدير الصورة.';
+  }
+});
+
+$('whatsappDailyBtn').addEventListener('click', () => {
+  const url = 'https://wa.me/?text=' + encodeURIComponent(window.lastDailyReportText || '');
+  window.open(url, '_blank', 'noopener');
+});
+
+// تجهيز التقرير المجمع الشامل كصورة صفحة واحدة مدمجة
+$('prepareWeeklyReportBtn').addEventListener('click', () => {
+  const baseDate = new Date(state.viewOffsetDate);
+  let daysHtml = '';
+  let fullTextLines = ['🌟 *تقرير المتابعة الشامل* 🌟\n'];
+
+  for (let i = 6; i >= 0; i--) {
+    const date = new Date(baseDate); date.setDate(baseDate.getDate() - i);
+    const key = dateKey(date);
+    const d = state.records[key];
+    const dateStr = formatDate(date);
+
+    if (d) {
+      daysHtml += `
+        <div class="daily-report-card">
+          <div class="daily-report-header">
+            <span>📅 ${dateStr}</span>
+            <span style="color:#C93A8C; font-size:12px;">مكتمل ✓</span>
+          </div>
+          <div class="daily-report-grid">
+            <div class="daily-report-item">🏃 النشاط: <b>${d.activity || 'غير مسجل'}</b></div>
+            <div class="daily-report-item">💧 المياه: <b>${d.water || 'غير مسجل'}</b></div>
+            <div class="daily-report-item">🍽️ الوجبات: <b>${d.meals || 'غير مسجل'}</b></div>
+            <div class="daily-report-item">🥚 البروتين: <b>${d.protein || 'غير مسجل'}</b></div>
+            <div class="daily-report-item">🍫 الحلويات: <b>${d.sweets || 'غير مسجل'}</b></div>
+            <div class="daily-report-item">😴 النوم: <b>${d.sleep || 'غير مسجل'}</b></div>
+          </div>
+          ${d.difficulty && d.difficulty.length ? `<div style="margin-top:6px; font-size:11px; color:#C93A8C;">🧩 الصعوبات: ${d.difficulty.join('، ')}</div>` : ''}
+          ${d.dailyNotes ? `<div style="margin-top:4px; font-size:11px; color:#30253A;">📝 ملاحظات: ${d.dailyNotes}</div>` : ''}
+        </div>
+      `;
+      fullTextLines.push(`📅 *${dateStr}*`);
+      fullTextLines.push(`- النشاط: ${d.activity || '-'} | المياه: ${d.water || '-'}`);
+      fullTextLines.push(`- الوجبات: ${d.meals || '-'} | البروتين: ${d.protein || '-'}`);
+      fullTextLines.push(`- النوم: ${d.sleep || '-'}`);
+      if(d.dailyNotes) fullTextLines.push(`- ملاحظات: ${d.dailyNotes}`);
+      fullTextLines.push('');
+    } else {
+      daysHtml += `
+        <div class="daily-report-card" style="opacity: 0.5;">
+          <div class="daily-report-header">
+            <span>📅 ${dateStr}</span>
+            <span style="color:#6C827A; font-size:12px;">لم يتم التسجيل</span>
+          </div>
+        </div>
+      `;
+    }
+  }
+
+  $('weeklyDaysList').innerHTML = daysHtml;
+  window.lastGeneratedReportText = fullTextLines.join('\n');
+  $('reportBox').classList.remove('show');
+  $('weeklyReportBox').classList.add('show');
+  $('weeklyReportBox').scrollIntoView({ behavior: 'smooth' });
+});
+
+$('downloadImageBtn').addEventListener('click', async () => {
+  const container = $('weeklyImageContainer');
+  $('weeklyShareNote').textContent = 'جاري تجهيز وتصدير التقرير كصورة صفحة واحدة...';
+  try {
+    const canvas = await html2canvas(container, { scale: 2, backgroundColor: '#FFFFFF' });
+    const link = document.createElement('a');
+    link.href = canvas.toDataURL('image/png');
+    link.download = 'التقرير-الشامل.png';
+    link.click();
+    $('weeklyShareNote').textContent = 'تم تحميل التقرير كصورة بنجاح! ✓';
+  } catch (err) {
+    $('weeklyShareNote').textContent = 'تعذر تصدير الصورة.';
+  }
+});
+
+$('whatsappBtn').addEventListener('click', () => {
+  const url = 'https://wa.me/?text=' + encodeURIComponent(window.lastGeneratedReportText || '');
+  window.open(url, '_blank', 'noopener');
+});
+
+$('prevDays').addEventListener('click', () => { state.viewOffsetDate.setDate(state.viewOffsetDate.getDate() - 7); renderCalendar(); });
+$('nextDays').addEventListener('click', () => { state.viewOffsetDate.setDate(state.viewOffsetDate.getDate() + 7); renderCalendar(); });
+
+// تغيير اللوجو عند الضغط عليه
+$('logoSlot').addEventListener('click', () => $('logoInput').click());
+$('logoInput').addEventListener('change', event => {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    $('logoImg.src') = e.target.result;
+    let img = $('logoImg');
+    img.src = e.target.result;
+    img.style.display = 'block';
+    $('logoPlaceholder').style.display = 'none';
+  };
+  reader.readAsDataURL(file);
+});
+
+selectDate(state.selectedDate);
+</script>
+</body>
+</html>
