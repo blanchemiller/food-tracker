@@ -61,14 +61,17 @@
   <!-- هيدر نظيف مع لوجو ثابت بدون أزرار تحكم أو إطار مزعج -->
   <header class="bg-white border-b border-slate-200 shadow-xs sticky top-0 z-50">
     <div class="max-w-xl mx-auto px-4 py-3 flex items-center justify-between">
+      <!-- العنوان على اليمين -->
+      <div>
+        <h1 class="font-black text-xl tracking-tight text-[#30253A]">المتابعة اليومية</h1>
+        <p class="text-xs text-[#107EAF] font-bold">خطوة صغيرة كل يوم بتفرق 💚</p>
+      </div>
+
+      <!-- اللوجو على الشمال (تم تكبيره إلى w-20 h-20 بدلاً من w-16 h-16) -->
       <div class="flex items-center gap-3">
-        <div id="logoSlot" class="w-16 h-16 rounded-2xl bg-white flex items-center justify-center overflow-hidden flex-shrink-0 shadow-xs">
+        <div id="logoSlot" class="w-20 h-20 rounded-2xl bg-white flex items-center justify-center overflow-hidden flex-shrink-0 shadow-xs">
           <img id="logoImg" src="logo.png" alt="شعار التطبيق" class="w-full h-full object-contain bg-white" onerror="this.style.display='none'; document.getElementById('logoPlaceholder').style.display='flex';">
           <div id="logoPlaceholder" class="w-full h-full text-[10px] text-slate-400 font-bold items-center justify-center hidden">الشعار</div>
-        </div>
-        <div>
-          <h1 class="font-black text-xl tracking-tight text-[#30253A]">المتابعة اليومية</h1>
-          <p class="text-xs text-[#107EAF] font-bold">خطوة صغيرة كل يوم بتفرق 💚</p>
         </div>
       </div>
     </div>
