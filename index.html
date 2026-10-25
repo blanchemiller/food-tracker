@@ -2,422 +2,672 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>المتابعة اليومية</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>المتابعة اليومية الاحترافية</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
 <!-- مكتبة html2canvas لتحويل التقارير إلى صور -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          brand: {
+            pink: '#C93A8C',
+            blue: '#107EAF',
+            bg: '#F8F6FA',
+            card: '#FFFFFF',
+            text: '#30253A'
+          }
+        },
+        fontFamily: {
+          sans: ['Tajawal', 'sans-serif']
+        }
+      }
+    }
+  }
+</script>
 <style>
-:root {
-  --primary: #C93A8C;
-  --secondary: #107EAF;
-  --bg-color: #F8FAFC;
-  --card-bg: #FFFFFF;
-  --text-main: #30253A;
-  --border-color: #E8DCE8;
-}
-* { box-sizing: border-box; }
-body { margin: 0; font-family: "Tajawal", sans-serif; background: var(--bg-color); color: var(--text-main); }
-.app-root { min-height: 100vh; padding: 16px 12px; display: flex; justify-content: center; }
-.shell { width: 100%; max-width: 560px; display: flex; flex-direction: column; gap: 14px; }
-
-/* هيدر مع لوجو ثابت ونظيف بدون أي حدود أو دوائر محيطة */
-.hero { background: #FFFFFF; border: 1px solid var(--border-color); border-radius: 20px; padding: 18px; text-align: center; box-shadow: 0 4px 15px rgba(67,43,77,.05); }
-.logo-slot { width: 90px; height: 90px; margin: 0 auto 10px; border-radius: 20px; background: #FFFFFF; display: flex; align-items: center; justify-content: center; overflow: hidden; border: none; outline: none; }
-.logo-slot img { width: 100%; height: 100%; object-fit: contain; background: #fff; }
-.logo-placeholder { font-size: 11px; color: #64748B; text-align: center; font-weight: 700; }
-h1 { font-size: 22px; font-weight: 800; margin: 0 0 4px; color: var(--text-main); }
-.hero p { margin: 0; font-size: 12px; color: #6C827A; }
-
-/* البطاقات العامة */
-.card { background: rgba(255,255,255,.97); border: 1px solid #E4E8F0; border-radius: 20px; padding: 16px; box-shadow: 0 8px 20px rgba(44,55,83,.04); }
-.section-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px solid #E8EEE6; }
-h2 { margin: 0; font-size: 18px; font-weight: 800; color: #762454; }
-.muted { font-size: 11px; color: #6C827A; }
-
-/* التقويم المرن بدون أشرطة بيضاء */
-.month-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
-.month-label { font-weight: 800; font-size: 14px; }
-.nav-btn { border: 1px solid #E5D7E7; background: #FFF5FA; color: var(--primary); width: 32px; height: 32px; border-radius: 10px; cursor: pointer; font-size: 16px; font-weight: bold; }
-.calendar-scroll { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: thin; }
-.day { min-width: 50px; height: 54px; border: 1px solid #E3EBE6; border-radius: 10px; background: #FBFDFC; padding: 4px 2px; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; font: inherit; flex-shrink: 0; -webkit-appearance: none; }
-.day span { pointer-events: none; }
-.day .day-name { font-size: 10px; color: #71867E; font-weight: 700; line-height: 1.2; }
-.day .num { font-size: 13px; font-weight: 800; line-height: 1.2; color: #30253A; }
-.day .dot { width: 4px; height: 4px; border-radius: 50%; background: transparent; margin-top: 1px; }
-.day.done .dot { background: var(--primary); }
-.day.selected { background: linear-gradient(135deg, var(--primary), var(--secondary)) !important; border-color: transparent !important; color: #fff !important; box-shadow: 0 4px 10px rgba(16,126,175,.2); }
-.day.selected .day-name, .day.selected .num, .day.selected .dot { color: #fff !important; background: transparent !important; }
-
-.progress-wrap { margin-top: 8px; display: flex; align-items: center; gap: 8px; }
-.progress-track { height: 6px; flex: 1; border-radius: 20px; background: #E4ECE7; overflow: hidden; }
-.progress-fill { height: 100%; background: linear-gradient(90deg, var(--primary), var(--secondary)); width: 0; border-radius: 20px; transition: width .2s; }
-
-/* النموذج والمدخلات */
-.form-grid { display: flex; flex-direction: column; gap: 12px; }
-.field { padding: 14px; border: 1px solid #E5E7F0; border-radius: 14px; background: #FFFFFF; box-shadow: 0 3px 10px rgba(52,57,87,.03); }
-label, .field-label { display: block; font-weight: 800; font-size: 14px; margin-bottom: 8px; color: #762454; }
-.option-grid, .choice-row, .checkbox-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; }
-.option-card, .choice, .check-item { position: relative; display: flex; cursor: pointer; }
-.option-card input, .choice input { position: absolute; opacity: 0; width: 1px; height: 1px; }
-.option-card span, .choice span, .check-item { display: flex; align-items: center; justify-content: center; text-align: center; gap: 6px; width: 100%; min-height: 38px; padding: 6px; border: 1px solid #E8DCE8; border-radius: 10px; background: #FFFFFF; color: #44344B; font-size: 12px; font-weight: 600; cursor: pointer; transition: all .15s; }
-.option-card input:checked + span, .choice input:checked + span, .check-item:has(input:checked) { background: #FCEAF4; border-color: var(--primary); color: #8B2865; font-weight: 700; box-shadow: 0 0 0 2px rgba(201,58,140,.11); }
-.check-item { align-items: center; justify-content: flex-start; padding: 8px 10px; border-radius: 10px; border: 1px solid #E8DCE8; background: #FFF; font-size: 12px; font-weight: 600; }
-.check-item input { accent-color: var(--primary); width: 15px; height: 15px; margin-left: 6px; }
-
-textarea { width: 100%; border: 1px solid #D9E5DE; border-radius: 10px; padding: 10px; font-family: inherit; font-size: 12px; resize: vertical; min-height: 60px; outline: none; background: #FBFDFC; }
-textarea:focus { border-color: var(--secondary); box-shadow: 0 0 0 3px rgba(16,126,175,.12); }
-
-/* الأزرار */
-.actions { display: flex; flex-direction: column; gap: 8px; margin-top: 14px; }
-.btn { font: inherit; border: 0; border-radius: 12px; padding: 12px; cursor: pointer; font-weight: 700; font-size: 14px; text-align: center; width: 100%; transition: transform .15s; }
-.btn:active { transform: scale(0.98); }
-.btn-primary { background: linear-gradient(120deg, var(--primary), var(--secondary)); color: #fff; box-shadow: 0 5px 14px rgba(16,126,175,.2); }
-.btn-soft { background: #FBEAF3; color: #762454; }
-.btn-outline { background: transparent; border: 1px solid currentColor; color: #762454; width: auto; padding: 6px 12px; font-size: 11px; }
-
-/* صندوق التقرير اليومي الاحترافي */
-.report { display: none; margin-top: 14px; border: 1px solid #B7D8C9; background: #F0FAF4; border-radius: 16px; padding: 14px; }
-.report.show { display: block; }
-.daily-image-container { background: #FFFFFF; border: 2px solid #C2E0D1; border-radius: 14px; padding: 14px; display: flex; flex-direction: column; gap: 10px; }
-.daily-report-card { background: #FBFDFC; border: 1px solid #E3EBE6; border-radius: 10px; padding: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.02); }
-.daily-report-header { font-weight: 800; font-size: 14px; color: var(--secondary); margin-bottom: 8px; border-bottom: 2px solid #E3EBE6; padding-bottom: 4px; display: flex; justify-content: space-between; align-items: center; }
-.daily-report-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; font-size: 11px; color: #30253A; }
-.daily-report-item { background: #FFF; padding: 6px 8px; border-radius: 6px; border: 1px solid #EEDCE8; }
-
-/* صندوق التقرير الاسبوعي الشامل كصورة صفحة واحدة */
-.weekly-report-box { display: none; margin-top: 14px; border: 1px solid #B7D8C9; background: #F0FAF4; border-radius: 16px; padding: 14px; }
-.weekly-report-box.show { display: block; }
-.weekly-image-container { background: #FFFFFF; border: 2px solid #C2E0D1; border-radius: 14px; padding: 14px; margin-top: 10px; display: flex; flex-direction: column; gap: 10px; }
-.status-note { font-size: 11px; color: #6C827A; text-align: center; margin-top: 8px; }
+  body {
+    font-family: 'Tajawal', sans-serif;
+    background-color: #F8F6FA;
+    color: #30253A;
+  }
+  .brand-gradient {
+    background: linear-gradient(135deg, #C93A8C 0%, #107EAF 100%);
+  }
+  .brand-gradient-soft {
+    background: linear-gradient(135deg, rgba(201, 58, 140, 0.05) 0%, rgba(16, 126, 175, 0.05) 100%);
+  }
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #F1EDF2;
+    border-radius: 10px;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #C93A8C;
+    border-radius: 10px;
+  }
 </style>
 </head>
-<body>
-<main class="app-root">
-  <div class="shell">
-    
-    <!-- هيدر مع لوجو ثابت ونظيف -->
-    <header class="hero">
-      <div class="logo-slot" id="logoSlot">
-        <img id="logoImg" src="logo.png" alt="شعار التطبيق" onerror="this.style.display='none'; document.getElementById('logoPlaceholder').style.display='block';">
-        <div class="logo-placeholder" id="logoPlaceholder" style="display:none;">الشعار</div>
-      </div>
-      <h1>المتابعة اليومية</h1>
-      <p>خطوة صغيرة كل يوم بتفرق 💚</p>
-    </header>
+<body class="bg-[#F8F6FA] text-[#30253A] min-h-screen pb-20">
 
-    <!-- متابعة الأيام -->
-    <section class="card" aria-labelledby="calendarTitle">
-      <div class="section-head">
-        <h2 id="calendarTitle">متابعة الأيام</h2>
-        <span class="muted" id="completedCount">0 أيام مسجلة</span>
+  <!-- هيدر نظيف مع لوجو ثابت بدون أزرار تحكم أو إطار مزعج -->
+  <header class="bg-white border-b border-slate-200 shadow-xs sticky top-0 z-50">
+    <div class="max-w-xl mx-auto px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div id="logoSlot" class="w-16 h-16 rounded-2xl bg-white flex items-center justify-center overflow-hidden flex-shrink-0 shadow-xs">
+          <img id="logoImg" src="logo.png" alt="شعار التطبيق" class="w-full h-full object-contain bg-white" onerror="this.style.display='none'; document.getElementById('logoPlaceholder').style.display='flex';">
+          <div id="logoPlaceholder" class="w-full h-full text-[10px] text-slate-400 font-bold items-center justify-center hidden">الشعار</div>
+        </div>
+        <div>
+          <h1 class="font-black text-xl tracking-tight text-[#30253A]">المتابعة اليومية</h1>
+          <p class="text-xs text-[#107EAF] font-bold">خطوة صغيرة كل يوم بتفرق 💚</p>
+        </div>
       </div>
-      <div class="month-nav">
-        <button class="nav-btn" id="prevDays" aria-label="الأيام السابقة">›</button>
-        <div class="month-label" id="monthLabel">فترة المتابعة</div>
-        <button class="nav-btn" id="nextDays" aria-label="الأيام التالية">‹</button>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="max-w-xl mx-auto px-4 mt-4 space-y-4">
+
+    <!-- 1. أسبوع المتابعة (تصميم مصغر ومرن بدون تقيد بأسبوع ثابت) -->
+    <section class="bg-white border border-[#E8DCE8] rounded-2xl p-4 shadow-sm space-y-3">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-2.5">
+        <div>
+          <h2 class="font-extrabold text-[#762454] text-base flex items-center gap-2">
+            <span class="w-2 h-4 rounded-full brand-gradient inline-block"></span> متابعة الأيام
+          </h2>
+          <p id="monthLabel" class="text-[11px] text-slate-500 mt-0.5">جارٍ التحميل...</p>
+        </div>
+        <div class="bg-[#FBEAF3] text-[#762454] border border-[#C93A8C]/20 text-[11px] font-bold px-2.5 py-1 rounded-xl" id="completedCount">
+          0 أيام مسجلة
+        </div>
       </div>
-      <div class="calendar-scroll" id="calendar"></div>
-      <div class="progress-wrap">
-        <div class="progress-track"><div class="progress-fill" id="monthProgress"></div></div>
-        <span class="muted" id="progressText">0 من 7 أيام</span>
+
+      <!-- Navigation Strip -->
+      <div class="flex items-center justify-between bg-[#F8F6FA] p-1.5 rounded-xl border border-slate-200/60">
+        <button id="prevDays" class="w-8 h-8 rounded-lg bg-white shadow-xs text-[#C93A8C] border border-[#C93A8C]/20 font-black flex items-center justify-center hover:bg-[#FBEAF3] transition active:scale-95">›</button>
+        <span class="text-xs font-bold text-slate-700" id="weekRangeIndicator">فترة المتابعة</span>
+        <button id="nextDays" class="w-8 h-8 rounded-lg bg-white shadow-xs text-[#C93A8C] border border-[#C93A8C]/20 font-black flex items-center justify-center hover:bg-[#FBEAF3] transition active:scale-95">‹</button>
+      </div>
+
+      <!-- Days Grid  -->
+      <div class="grid grid-cols-7 gap-1.5" id="calendar"></div>
+
+      <!-- Progress Track -->
+      <div class="space-y-1 pt-0.5">
+        <div class="flex justify-between text-[11px] font-bold text-slate-600">
+          <span>نسبة إنجاز الفترة</span>
+          <span id="progressText">0%</span>
+        </div>
+        <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden p-0.5 border border-slate-200">
+          <div id="monthProgress" class="brand-gradient h-full rounded-full transition-all duration-300" style="width: 0%"></div>
+        </div>
       </div>
     </section>
 
-    <!-- تقرير اليوم -->
-    <section class="card" aria-labelledby="formTitle">
-      <div class="section-head">
+    <!-- 2. تقرير اليوم -->
+    <section class="bg-white border border-[#E8DCE8] rounded-2xl p-4 shadow-sm space-y-3">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-2.5">
         <div>
-          <h2 id="formTitle">تقرير اليوم</h2>
-          <div class="muted" id="selectedDateLabel">السبت 24 أكتوبر 2026</div>
+          <h2 class="font-extrabold text-[#762454] text-base flex items-center gap-2">
+            <span class="w-2 h-4 rounded-full brand-gradient inline-block"></span> تقرير اليوم
+          </h2>
+          <span id="selectedDateLabel" class="text-xs font-bold text-[#107EAF]">اليوم</span>
         </div>
-        <span class="muted" id="saveStatus">مسودة غير محفوظة</span>
+        <span id="saveStatus" class="text-xs font-bold px-2.5 py-0.5 rounded-xl bg-amber-50 text-amber-700 border border-amber-200">مسودة جديدة</span>
       </div>
-      
-      <form id="dailyForm">
-        <div class="form-grid">
-          
-          <div class="field">
-            <label for="activity">🏃 النشاط البدني</label>
-            <div class="option-grid" id="activityChoices">
-              <label class="option-card"><input type="radio" name="activity" value="تمارين في المنزل"><span>تمارين في المنزل</span></label>
-              <label class="option-card"><input type="radio" name="activity" value="المشي خارج المنزل"><span>المشي خارج المنزل</span></label>
-              <label class="option-card"><input type="radio" name="activity" value="الجيم"><span>الجيم</span></label>
-              <label class="option-card"><input type="radio" name="activity" value="لم أمارس نشاطا"><span>لم أمارس نشاطا</span></label>
-            </div>
-          </div>
 
-          <div class="field">
-            <label for="water">💧 شرب المياه</label>
-            <div class="option-grid" id="waterChoices" style="grid-template-columns: repeat(3, 1fr);">
-              <label class="option-card"><input type="radio" name="water" value="500 مل"><span>500 مل</span></label>
-              <label class="option-card"><input type="radio" name="water" value="1000 مل"><span>1000 مل</span></label>
-              <label class="option-card"><input type="radio" name="water" value="1500 مل"><span>1500 مل</span></label>
-              <label class="option-card"><input type="radio" name="water" value="2000 مل"><span>2000 مل</span></label>
-              <label class="option-card"><input type="radio" name="water" value="2500 مل"><span>2500 مل</span></label>
-            </div>
+      <form id="dailyForm" class="space-y-3">
+        
+        <!-- Activity Field -->
+        <div class="p-3 rounded-xl border border-slate-200 bg-[#FAFAFC] space-y-2">
+          <label class="block font-extrabold text-xs text-[#762454]">🏃 النشاط البدني</label>
+          <div class="grid grid-cols-2 gap-2" id="activityChoices">
+            <label class="cursor-pointer border border-slate-200 rounded-xl p-2.5 flex items-center gap-2 bg-white hover:border-[#C93A8C] transition has-[:checked]:bg-[#FBEAF3] has-[:checked]:border-[#C93A8C] has-[:checked]:text-[#762454]">
+              <input type="radio" name="activity" value="تمارين في المنزل" class="accent-[#C93A8C] w-4 h-4">
+              <span class="text-xs font-bold">تمارين في المنزل</span>
+            </label>
+            <label class="cursor-pointer border border-slate-200 rounded-xl p-2.5 flex items-center gap-2 bg-white hover:border-[#C93A8C] transition has-[:checked]:bg-[#FBEAF3] has-[:checked]:border-[#C93A8C] has-[:checked]:text-[#762454]">
+              <input type="radio" name="activity" value="المشي خارج المنزل" class="accent-[#C93A8C] w-4 h-4">
+              <span class="text-xs font-bold">المشي خارج المنزل</span>
+            </label>
+            <label class="cursor-pointer border border-slate-200 rounded-xl p-2.5 flex items-center gap-2 bg-white hover:border-[#C93A8C] transition has-[:checked]:bg-[#FBEAF3] has-[:checked]:border-[#C93A8C] has-[:checked]:text-[#762454]">
+              <input type="radio" name="activity" value="الجيم" class="accent-[#C93A8C] w-4 h-4">
+              <span class="text-xs font-bold">الجيم</span>
+            </label>
+            <label class="cursor-pointer border border-slate-200 rounded-xl p-2.5 flex items-center gap-2 bg-white hover:border-[#C93A8C] transition has-[:checked]:bg-[#FBEAF3] has-[:checked]:border-[#C93A8C] has-[:checked]:text-[#762454]">
+              <input type="radio" name="activity" value="لم أمارس نشاطًا" class="accent-[#C93A8C] w-4 h-4">
+              <span class="text-xs font-bold">لم أمارس نشاطا</span>
+            </label>
           </div>
-
-          <div class="field">
-            <label for="meals">🍽️ الالتزام بمواعيد الوجبات</label>
-            <div class="option-grid" id="mealsChoices">
-              <label class="option-card"><input type="radio" name="meals" value="التزمت"><span>التزمت</span></label>
-              <label class="option-card"><input type="radio" name="meals" value="تغيير بسيط"><span>تغيير بسيط</span></label>
-              <label class="option-card" style="grid-column: span 2;"><input type="radio" name="meals" value="لم أتمكن من الالتزام"><span>لم أتمكن من الالتزام</span></label>
-            </div>
-          </div>
-
-          <div class="field">
-            <label for="protein">🥚 كمية البروتين</label>
-            <div class="option-grid" id="proteinChoices">
-              <label class="option-card"><input type="radio" name="protein" value="حققت الكمية"><span>حققت البروتين</span></label>
-              <label class="option-card"><input type="radio" name="protein" value="أقل من المطلوب"><span>أقل من المطلوب</span></label>
-            </div>
-          </div>
-
-          <div class="field">
-            <label for="sweets">🍫 السكريات والحلويات</label>
-            <div class="option-grid" id="sweetsChoices">
-              <label class="option-card"><input type="radio" name="sweets" value="لا توجد إضافات"><span>بدون سكريات</span></label>
-              <label class="option-card"><input type="radio" name="sweets" value="إضافات خارج الخطة"><span>إضافات خارج الخطة</span></label>
-            </div>
-          </div>
-
-          <div class="field sleep-field" id="sleepField">
-            <span class="field-label">😴 جودة النوم</span>
-            <div class="choice-row" id="sleepChoices">
-              <label class="choice"><input type="radio" name="sleep" value="جيد"><span>جيد</span></label>
-              <label class="choice"><input type="radio" name="sleep" value="متقطع"><span>متقطع</span></label>
-              <label class="choice"><input type="radio" name="sleep" value="غير كاف"><span>غير كاف</span></label>
-            </div>
-          </div>
-
-          <div class="field">
-            <span class="field-label">🧩 أكبر صعوبة واجهتك؟</span>
-            <div class="checkbox-list" id="difficultyChoices">
-              <label class="check-item"><input type="checkbox" name="difficulty" value="لم أواجه صعوبات"> لم أواجه صعوبات</label>
-              <label class="check-item"><input type="checkbox" name="difficulty" value="الجوع أو عدم الشبع"> الجوع أو عدم الشبع</label>
-              <label class="check-item"><input type="checkbox" name="difficulty" value="الرغبة في الحلويات أو الأكل العشوائي"> الرغبة في الحلويات أو الأكل العشوائي</label>
-              <label class="check-item"><input type="checkbox" name="difficulty" value="صعوبة النشاط البدني"> صعوبة النشاط البدني</label>
-              <label class="check-item"><input type="checkbox" name="difficulty" value="قلة النوم أو الإرهاق"> قلة النوم أو الإرهاق</label>
-              <label class="check-item"><input type="checkbox" name="difficulty" value="سبب آخر"> سبب آخر</label>
-            </div>
-          </div>
-
-          <div class="field" id="otherDifficultyWrap" hidden>
-            <label for="otherDifficulty">تفاصيل السبب الآخر</label>
-            <textarea id="otherDifficulty" name="otherDifficulty" placeholder="اكتبي التفاصيل هنا..."></textarea>
-          </div>
-
-          <div class="field notes-field">
-            <label for="dailyNotes">📝 ملاحظات إضافية</label>
-            <textarea id="dailyNotes" name="dailyNotes" placeholder="اكتبي أي ملاحظات عن يومك..."></textarea>
-          </div>
-
         </div>
 
-        <div class="actions">
-          <button class="btn btn-soft" type="button" id="saveDayBtn">حفظ بيانات اليوم ✓</button>
-          <button class="btn btn-outline" type="button" id="prepareReportBtn">🎨  التقرير اليومي</button>
-          <button class="btn btn-primary" type="button" id="prepareWeeklyReportBtn">📸  التقرير الاسبوعي</button>
+        <!-- Water Field -->
+        <div class="p-3 rounded-xl border border-slate-200 bg-[#FAFAFC] space-y-2">
+          <label class="block font-extrabold text-xs text-[#762454]">💧 شرب المياه</label>
+          <div class="grid grid-cols-3 sm:grid-cols-5 gap-2" id="waterChoices">
+            <label class="cursor-pointer border border-slate-200 rounded-xl p-2 flex items-center justify-center gap-1 bg-white hover:border-[#107EAF] transition has-[:checked]:bg-sky-50 has-[:checked]:border-[#107EAF] has-[:checked]:text-[#107EAF] text-center">
+              <input type="radio" name="water" value="500 مل" class="accent-[#107EAF] w-3.5 h-3.5">
+              <span class="text-[11px] font-bold">500 مل</span>
+            </label>
+            <label class="cursor-pointer border border-slate-200 rounded-xl p-2 flex items-center justify-center gap-1 bg-white hover:border-[#107EAF] transition has-[:checked]:bg-sky-50 has-[:checked]:border-[#107EAF] has-[:checked]:text-[#107EAF] text-center">
+              <input type="radio" name="water" value="1000 مل" class="accent-[#107EAF] w-3.5 h-3.5">
+              <span class="text-[11px] font-bold">1000 مل</span>
+            </label>
+            <label class="cursor-pointer border border-slate-200 rounded-xl p-2 flex items-center justify-center gap-1 bg-white hover:border-[#107EAF] transition has-[:checked]:bg-sky-50 has-[:checked]:border-[#107EAF] has-[:checked]:text-[#107EAF] text-center">
+              <input type="radio" name="water" value="1500 مل" class="accent-[#107EAF] w-3.5 h-3.5">
+              <span class="text-[11px] font-bold">1500 مل</span>
+            </label>
+            <label class="cursor-pointer border border-slate-200 rounded-xl p-2 flex items-center justify-center gap-1 bg-white hover:border-[#107EAF] transition has-[:checked]:bg-sky-50 has-[:checked]:border-[#107EAF] has-[:checked]:text-[#107EAF] text-center">
+              <input type="radio" name="water" value="2000 مل" class="accent-[#107EAF] w-3.5 h-3.5">
+              <span class="text-[11px] font-bold">2000 مل</span>
+            </label>
+            <label class="cursor-pointer border border-slate-200 rounded-xl p-2 flex items-center justify-center gap-1 bg-white hover:border-[#107EAF] transition has-[:checked]:bg-sky-50 has-[:checked]:border-[#107EAF] has-[:checked]:text-[#107EAF] text-center col-span-3 sm:col-span-1">
+              <input type="radio" name="water" value="2500 مل" class="accent-[#107EAF] w-3.5 h-3.5">
+              <span class="text-[11px] font-bold">2500 مل</span>
+            </label>
+          </div>
         </div>
-        <p class="status-note">البيانات تحفظ تلقائياً في المعاينة على جهازك.</p>
+
+        <!-- Meals, Protein, Sweets Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+          <!-- Meals Commitment -->
+          <div class="p-3 rounded-xl border border-slate-200 bg-[#FAFAFC] space-y-2">
+            <label class="block font-extrabold text-xs text-[#762454]">🍽️ مواعيد الوجبات</label>
+            <div class="space-y-1.5">
+              <label class="cursor-pointer border border-slate-200 rounded-xl p-2 flex items-center gap-2 bg-white hover:border-[#C93A8C] transition has-[:checked]:bg-[#FBEAF3] has-[:checked]:border-[#C93A8C]">
+                <input type="radio" name="meals" value="التزمت" class="accent-[#C93A8C] w-3.5 h-3.5">
+                <span class="text-xs font-bold">التزمت بالوجبات</span>
+              </label>
+              <label class="cursor-pointer border border-slate-200 rounded-xl p-2 flex items-center gap-2 bg-white hover:border-[#C93A8C] transition has-[:checked]:bg-[#FBEAF3] has-[:checked]:border-[#C93A8C]">
+                <input type="radio" name="meals" value="تغيير بسيط" class="accent-[#C93A8C] w-3.5 h-3.5">
+                <span class="text-xs font-bold">تغيير بسيط</span>
+              </label>
+              <label class="cursor-pointer border border-slate-200 rounded-xl p-2 flex items-center gap-2 bg-white hover:border-[#C93A8C] transition has-[:checked]:bg-[#FBEAF3] has-[:checked]:border-[#C93A8C]">
+                <input type="radio" name="meals" value="لم أتمكن من الالتزام" class="accent-[#C93A8C] w-3.5 h-3.5">
+                <span class="text-xs font-bold">لم أتمكن من الالتزام</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Protein & Sweets Column -->
+          <div class="space-y-2.5">
+            <div class="p-3 rounded-xl border border-slate-200 bg-[#FAFAFC] space-y-1.5">
+              <label class="block font-extrabold text-xs text-[#762454]">🥚 كمية البروتين</label>
+              <div class="grid grid-cols-2 gap-1.5">
+                <label class="cursor-pointer border border-slate-200 rounded-xl p-2 flex items-center justify-center gap-1 bg-white hover:border-[#C93A8C] transition has-[:checked]:bg-[#FBEAF3] has-[:checked]:border-[#C93A8C] text-center">
+                  <input type="radio" name="protein" value="حققت الكمية" class="accent-[#C93A8C] w-3 h-3">
+                  <span class="text-[11px] font-bold">حققت الكمية</span>
+                </label>
+                <label class="cursor-pointer border border-slate-200 rounded-xl p-2 flex items-center justify-center gap-1 bg-white hover:border-[#C93A8C] transition has-[:checked]:bg-[#FBEAF3] has-[:checked]:border-[#C93A8C] text-center">
+                  <input type="radio" name="protein" value="أقل من المطلوب" class="accent-[#C93A8C] w-3 h-3">
+                  <span class="text-[11px] font-bold">أقل من المطلوب</span>
+                </label>
+              </div>
+            </div>
+
+            <div class="p-3 rounded-xl border border-slate-200 bg-[#FAFAFC] space-y-1.5">
+              <label class="block font-extrabold text-xs text-[#762454]">🍫 السكريات والحلويات</label>
+              <div class="grid grid-cols-2 gap-1.5">
+                <label class="cursor-pointer border border-slate-200 rounded-xl p-2 flex items-center gap-1.5 bg-white hover:border-[#C93A8C] transition has-[:checked]:bg-[#FBEAF3] has-[:checked]:border-[#C93A8C]">
+                  <input type="radio" name="sweets" value="لا توجد إضافات" class="accent-[#C93A8C] w-3 h-3">
+                  <span class="text-[11px] font-bold">بدون إضافات</span>
+                </label>
+                <label class="cursor-pointer border border-slate-200 rounded-xl p-2 flex items-center gap-1.5 bg-white hover:border-[#C93A8C] transition has-[:checked]:bg-[#FBEAF3] has-[:checked]:border-[#C93A8C]">
+                  <input type="radio" name="sweets" value="إضافات خارج الخطة" class="accent-[#C93A8C] w-3 h-3">
+                  <span class="text-[11px] font-bold">خارج الخطة</span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sleep Quality -->
+        <div class="p-3 rounded-xl border border-slate-200 bg-[#FAFAFC] space-y-2">
+          <label class="block font-extrabold text-xs text-[#762454]">😴 جودة النوم</label>
+          <div class="grid grid-cols-3 gap-2">
+            <label class="cursor-pointer border border-slate-200 rounded-xl p-2 flex items-center justify-center gap-1 bg-white hover:border-[#107EAF] transition has-[:checked]:bg-sky-50 has-[:checked]:border-[#107EAF] text-center">
+              <input type="radio" name="sleep" value="جيد" class="accent-[#107EAF] w-3.5 h-3.5">
+              <span class="text-xs font-bold">جيد</span>
+            </label>
+            <label class="cursor-pointer border border-slate-200 rounded-xl p-2 flex items-center justify-center gap-1 bg-white hover:border-[#107EAF] transition has-[:checked]:bg-sky-50 has-[:checked]:border-[#107EAF] text-center">
+              <input type="radio" name="sleep" value="متقطع" class="accent-[#107EAF] w-3.5 h-3.5">
+              <span class="text-xs font-bold">متقطع</span>
+            </label>
+            <label class="cursor-pointer border border-slate-200 rounded-xl p-2 flex items-center justify-center gap-1 bg-white hover:border-[#107EAF] transition has-[:checked]:bg-sky-50 has-[:checked]:border-[#107EAF] text-center">
+              <input type="radio" name="sleep" value="غير كاف" class="accent-[#107EAF] w-3.5 h-3.5">
+              <span class="text-xs font-bold">غير كاف</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Difficulties -->
+        <div class="p-3 rounded-xl border border-slate-200 bg-[#FAFAFC] space-y-2">
+          <label class="block font-extrabold text-xs text-[#762454]">🧩 أكبر صعوبة واجهتك؟</label>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2" id="difficultyChoices">
+            <label class="cursor-pointer border border-slate-200 rounded-xl p-2 flex items-center gap-2 bg-white hover:border-[#C93A8C] transition has-[:checked]:bg-[#FBEAF3] has-[:checked]:border-[#C93A8C]">
+              <input type="checkbox" name="difficulty" value="لم أواجه صعوبات" class="accent-[#C93A8C] w-4 h-4 rounded">
+              <span class="text-xs font-bold">لم أواجه صعوبات</span>
+            </label>
+            <label class="cursor-pointer border border-slate-200 rounded-xl p-2 flex items-center gap-2 bg-white hover:border-[#C93A8C] transition has-[:checked]:bg-[#FBEAF3] has-[:checked]:border-[#C93A8C]">
+              <input type="checkbox" name="difficulty" value="الجوع أو عدم الشبع" class="accent-[#C93A8C] w-4 h-4 rounded">
+              <span class="text-xs font-bold">الجوع أو عدم الشبع</span>
+            </label>
+            <label class="cursor-pointer border border-slate-200 rounded-xl p-2 flex items-center gap-2 bg-white hover:border-[#C93A8C] transition has-[:checked]:bg-[#FBEAF3] has-[:checked]:border-[#C93A8C]">
+              <input type="checkbox" name="difficulty" value="الرغبة في الحلويات أو الأكل العشوائي" class="accent-[#C93A8C] w-4 h-4 rounded">
+              <span class="text-xs font-bold">الرغبة في الحلويات</span>
+            </label>
+            <label class="cursor-pointer border border-slate-200 rounded-xl p-2 flex items-center gap-2 bg-white hover:border-[#C93A8C] transition has-[:checked]:bg-[#FBEAF3] has-[:checked]:border-[#C93A8C]">
+              <input type="checkbox" name="difficulty" value="صعوبة النشاط البدني" class="accent-[#C93A8C] w-4 h-4 rounded">
+              <span class="text-xs font-bold">صعوبة النشاط البدني</span>
+            </label>
+            <label class="cursor-pointer border border-slate-200 rounded-xl p-2 flex items-center gap-2 bg-white hover:border-[#C93A8C] transition has-[:checked]:bg-[#FBEAF3] has-[:checked]:border-[#C93A8C]">
+              <input type="checkbox" name="difficulty" value="قلة النوم أو الإرهاق" class="accent-[#C93A8C] w-4 h-4 rounded">
+              <span class="text-xs font-bold">قلة النوم أو الإرهاق</span>
+            </label>
+            <label class="cursor-pointer border border-slate-200 rounded-xl p-2 flex items-center gap-2 bg-white hover:border-[#C93A8C] transition has-[:checked]:bg-[#FBEAF3] has-[:checked]:border-[#C93A8C]">
+              <input type="checkbox" name="difficulty" value="سبب آخر" class="accent-[#C93A8C] w-4 h-4 rounded">
+              <span class="text-xs font-bold">سبب آخر</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Other Difficulty details -->
+        <div id="otherDifficultyWrap" class="hidden space-y-1">
+          <label class="block font-bold text-xs text-slate-700">تفاصيل السبب الآخر:</label>
+          <input type="text" id="otherDifficulty" name="otherDifficulty" placeholder="اكتبي التفاصيل هنا..." class="w-full p-2.5 bg-white border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-[#C93A8C] outline-none">
+        </div>
+
+        <!-- Daily Notes (تم تصغير حجمها قليلاً لتكون أصغر وأكثر إحكاماً) -->
+        <div class="p-3 rounded-xl border border-slate-200 bg-[#FAFAFC] space-y-1.5">
+          <label for="dailyNotes" class="block font-extrabold text-xs text-[#762454]">📝 ملاحظات إضافية</label>
+          <textarea id="dailyNotes" name="dailyNotes" placeholder="اكتبي أي ملاحظات عن يومك..." class="w-full p-2.5 bg-white border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-[#C93A8C] outline-none min-h-[50px] resize-y"></textarea>
+        </div>
+
+        <!-- Form Action Buttons -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
+          <button type="button" id="saveDayBtn" class="w-full bg-[#FBEAF3] hover:bg-[#F4D3E6] text-[#762454] border border-[#C93A8C]/30 font-bold py-2.5 px-3 rounded-xl transition active:scale-95 flex items-center justify-center gap-2 text-xs shadow-xs">
+            <span>💾 حفظ بيانات اليوم</span>
+          </button>
+          <button type="button" id="prepareReportBtn" class="w-full brand-gradient hover:opacity-95 text-white font-bold py-2.5 px-3 rounded-xl shadow-md transition active:scale-95 flex items-center justify-center gap-2 text-xs">
+            <span>✨ عرض التقرير اليومي</span>
+          </button>
+        </div>
       </form>
 
-      <!-- صندوق معاينة التقرير اليومي  -->
-      <div class="report" id="reportBox" aria-live="polite">
-        <div class="section-head" style="margin-bottom:6px;">
-          <h2>📋 التقرير اليومي</h2>
-        </div>
-        <div class="daily-image-container" id="dailyImageContainer">
-          <div style="text-align:center; font-weight:800; font-size:15px; color:#C93A8C; padding-bottom:4px; border-bottom:2px solid #E3EBE6;">
-            🌟 تقرير المتابعة اليومي 🌟
+      <!-- CREATIVE DAILY REPORT CARD MODAL/PREVIEW -->
+      <div id="reportBox" class="hidden mt-4 p-4 rounded-2xl bg-gradient-to-br from-[#FBEAF3]/70 via-white to-sky-50 border-2 border-[#C93A8C]/30 shadow-lg space-y-3 relative overflow-hidden">
+        <div class="absolute -top-10 -left-10 w-32 h-32 bg-[#C93A8C]/10 rounded-full blur-xl pointer-events-none"></div>
+        <div class="absolute -bottom-10 -right-10 w-32 h-32 bg-[#107EAF]/10 rounded-full blur-xl pointer-events-none"></div>
+
+        <div id="dailyImageContainer" class="space-y-3 bg-transparent">
+          <div class="flex items-center justify-between border-b border-[#C93A8C]/20 pb-2.5 relative z-10">
+            <div class="flex items-center gap-2">
+              <span class="w-7 h-7 rounded-xl brand-gradient text-white flex items-center justify-center font-bold text-xs shadow-sm">🌿</span>
+              <div>
+                <h3 class="font-black text-[#762454] text-xs">بطاقة إنجاز اليوم</h3>
+                <p id="cardDateSubtitle" class="text-[10px] text-[#107EAF] font-bold">السبت</p>
+              </div>
+            </div>
+            <span class="text-[9px] bg-white text-[#C93A8C] border border-[#C93A8C]/30 px-2 py-0.5 rounded-full font-extrabold shadow-2xs">رؤية يومية مميزة</span>
           </div>
-          <div id="singleDailyReportContent"></div>
-        </div>
-        <div class="actions" style="margin-top: 10px;">
-          <button class="btn btn-primary" type="button" id="downloadDailyImageBtn">📥 حفظ التقرير كصورة</button>
-          <button class="btn btn-soft" type="button" id="shareDailyImageBtn">📤 مشاركة الصورة لأي تطبيق</button>
-        </div>
-        <p class="status-note" id="shareNote">يمكنك حفظ التقرير أو مشاركته كصورة مباشرة.</p>
-      </div>
 
-      <!-- صندوق التقرير الاسبوعي -->
-      <div class="weekly-report-box" id="weeklyReportBox" aria-live="polite">
-        <div class="section-head" style="margin-bottom:6px;">
-          <h2>📋 التقرير الاسبوعي</h2>
-          <span class="muted" id="reportDateRange"></span>
-        </div>
-        <p class="muted">صفحة مدمجة تضم كافة الأيام المسجلة ببطاقات احترافية:</p>
-        
-        <div class="weekly-image-container" id="weeklyImageContainer">
-          <div style="text-align:center; font-weight:800; font-size:15px; color:#C93A8C; padding-bottom:4px; border-bottom:2px solid #E3EBE6;">
-            🌟 تقرير المتابعة الشامل 🌟
+          <!-- Visual Badges Grid for Daily Card -->
+          <div id="dailyVisualBadges" class="grid grid-cols-2 sm:grid-cols-3 gap-2 relative z-10"></div>
+
+          <!-- Daily Notes Box if exists -->
+          <div id="dailyCardNotesWrap" class="hidden bg-white/90 border border-slate-200 p-2.5 rounded-xl relative z-10">
+            <p class="text-[10px] font-extrabold text-[#762454] mb-0.5">📝 ملاحظاتك:</p>
+            <p id="dailyCardNotesText" class="text-[11px] text-slate-700 italic"></p>
           </div>
-          <div id="weeklyDaysList" style="display:flex; flex-direction:column; gap:8px;"></div>
         </div>
 
-        <div class="actions" style="margin-top: 10px;">
-          <button class="btn btn-primary" type="button" id="downloadImageBtn">📥 حفظ التقرير كصورة</button>
-          <button class="btn btn-soft" type="button" id="shareImageBtn">📤 مشاركة التقرير</button>
+        <div class="flex gap-2 pt-1 relative z-10">
+          <button type="button" id="shareBtn" class="flex-1 bg-[#107EAF] hover:bg-[#0E6C97] text-white font-bold py-2 px-3 rounded-xl text-xs transition shadow-sm flex items-center justify-center gap-1.5">
+            <span>📤 مشاركة الصورة</span>
+          </button>
+          <button type="button" id="downloadDailyImageBtn" class="flex-1 bg-white hover:bg-slate-100 text-[#762454] border border-[#C93A8C]/30 font-bold py-2 px-3 rounded-xl text-xs transition flex items-center justify-center gap-1.5">
+            <span>📥 حفظ الصورة</span>
+          </button>
         </div>
-        <p class="status-note" id="weeklyShareNote">يمكنك حفظ التقرير أو مشاركته كصورة مباشرة.</p>
+        <p id="shareNote" class="text-[11px] text-[#762454] text-center relative z-10"></p>
       </div>
-
     </section>
+
+    <!-- 3. تقرير المتابعة الاسبوعي (Digital Journal) -->
+    <section class="bg-white border-2 border-[#107EAF]/30 rounded-2xl p-4 shadow-sm space-y-3 brand-gradient-soft">
+      <div class="flex items-center justify-between border-b border-slate-200/60 pb-2.5">
+        <div>
+          <h2 class="font-extrabold text-[#107EAF] text-base flex items-center gap-2">
+            <span class="w-2 h-4 rounded-full brand-gradient inline-block"></span> تقرير المتابعة الاسبوعي
+          </h2>
+          <p class="text-[11px] text-slate-500 mt-0.5">حالتك الصحية الاسبوعية</p>
+        </div>
+        <button type="button" id="openJournalBookBtn" class="brand-gradient hover:opacity-95 text-white font-bold text-xs py-2 px-3.5 rounded-xl shadow-md transition active:scale-95 flex items-center gap-1.5">
+          <span>📖 عرض التقرير الاسبوعي</span>
+        </button>
+      </div>
+
+      <div class="bg-white border border-[#107EAF]/20 rounded-xl p-3 flex items-center justify-between shadow-2xs">
+        <div>
+          <span class="text-[11px] text-slate-500 block">ملخص فترة المتابعة</span>
+          <span id="journalQuickSummary" class="text-xs font-bold text-[#107EAF]">انقري على "عرض التقرير الاسبوعي" لعرض التفاصيل الكاملة</span>
+        </div>
+        <div class="w-8 h-8 rounded-lg bg-sky-50 text-[#107EAF] flex items-center justify-center font-bold text-xs">✨</div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- DIGITAL JOURNAL BOOK MODAL -->
+  <div id="journalModal" class="fixed inset-0 bg-black/60 backdrop-blur-xs z-50 flex items-center justify-center p-3 sm:p-6 hidden">
+    <div class="bg-[#FCFBFC] w-full max-w-2xl rounded-2xl border-4 border-[#C93A8C]/30 shadow-2xl overflow-hidden flex flex-col max-h-[92vh]">
+      
+      <div class="brand-gradient text-white p-4 flex items-center justify-between relative">
+        <div class="absolute -right-6 -bottom-6 w-24 h-24 bg-white/10 rounded-full blur-md"></div>
+        <div>
+          <span class="text-[10px] bg-white/20 px-2 py-0.5 rounded font-bold uppercase">حالتك الصحية الاسبوعية</span>
+          <h3 id="bookTitleRange" class="font-black text-sm sm:text-base mt-1">التقرير الاسبوعي</h3>
+        </div>
+        <button type="button" id="closeJournalModal" class="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 text-white font-bold flex items-center justify-center text-base transition">✕</button>
+      </div>
+
+      <div class="bg-[#FBEAF3]/50 px-4 py-2.5 border-b border-[#C93A8C]/20 grid grid-cols-3 gap-2 text-center">
+        <div class="bg-white p-2 rounded-xl border border-[#C93A8C]/20 shadow-2xs">
+          <span class="block text-[10px] text-slate-500 font-bold">الأيام المسجلة</span>
+          <span id="bookStatDays" class="text-xs font-black text-[#762454]">0 / 7</span>
+        </div>
+        <div class="bg-white p-2 rounded-xl border border-[#107EAF]/20 shadow-2xs">
+          <span class="block text-[10px] text-slate-500 font-bold">إجمالي المياه</span>
+          <span id="bookStatWater" class="text-xs font-black text-[#107EAF]">0 مل</span>
+        </div>
+        <div class="bg-white p-2 rounded-xl border border-amber-200 shadow-2xs">
+          <span class="block text-[10px] text-slate-500 font-bold">نسبة الإنجاز</span>
+          <span id="bookStatScore" class="text-xs font-black text-amber-600">0%</span>
+        </div>
+      </div>
+
+      <div class="p-4 sm:p-5 overflow-y-auto space-y-3 flex-1 bg-slate-50/50" id="weeklyImageContainer">
+        <div style="text-align:center; font-weight:800; font-size:14px; color:#C93A8C; padding-bottom:4px; border-bottom:2px solid #E3EBE6;" class="hidden" id="bookExportHeader">
+          🌟 التقرير الاسبوعي 🌟
+        </div>
+        <div id="bookPagesContainer" class="space-y-3"></div>
+      </div>
+
+      <div class="p-3 bg-white border-t border-slate-200 flex gap-2">
+        <button type="button" id="shareBookBtn" class="flex-1 brand-gradient text-white font-bold py-2.5 px-3 rounded-xl text-xs transition shadow-md flex items-center justify-center gap-1.5">
+          <span>📤 مشاركة التقرير الاسبوعي</span>
+        </button>
+        <button type="button" id="downloadBookImageBtn" class="flex-1 bg-white hover:bg-slate-100 text-[#762454] border border-[#C93A8C]/30 font-bold py-2.5 px-3 rounded-xl text-xs transition flex items-center justify-center gap-1.5">
+          <span>📥 حفظ التقرير الاسبوعي</span>
+        </button>
+      </div>
+      <p id="bookShareNote" class="text-[11px] text-slate-500 text-center pb-2 bg-white"></p>
+    </div>
   </div>
-</main>
+
+  <footer class="text-center text-[11px] text-slate-400 mt-6">
+    <p>جميع البيانات تُحفظ محليا داخل متصفحك بكل أمان 🔒</p>
+  </footer>
 
 <script>
-const state = { 
-  selectedDate: new Date(), 
-  viewOffsetDate: new Date(),
-  records: JSON.parse(localStorage.getItem('daily_records') || '{}')
+// State Management (مرن بدون بداية أسبوع ثابتة وبدون ساعات ودقائق تلخبط)
+const today = new Date();
+today.setHours(0, 0, 0, 0);
+
+const state = {
+  selectedDate: new Date(today),
+  viewAnchorDate: new Date(today), // متغير خاص بثبات الشريط لا يتحرك عند الضغط على الأيام
+  records: JSON.parse(localStorage.getItem('daily_health_records') || '{}')
 };
 
-const $ = (id) => document.getElementById(id);
 const monthNames = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
 const weekdays = ['الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
 
-function dateKey(date) { 
-  return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`; 
+function dateKey(date) {
+  return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`;
 }
 
-function formatDate(date) { 
-  return `${weekdays[date.getDay()]} ${date.getDate()} ${monthNames[date.getMonth()]} ${date.getFullYear()}`; 
+function formatDate(date) {
+  return `${weekdays[date.getDay()]} ${date.getDate()} ${monthNames[date.getMonth()]} ${date.getFullYear()}`;
 }
 
+function saveToLocalStorage() {
+  localStorage.setItem('daily_health_records', JSON.stringify(state.records));
+}
+
+// عرض شريط الأيام بالكامل بشكل صحيح ومظبوط 100%
 function renderCalendar() {
-  const cal = $('calendar'); cal.innerHTML = '';
-  let completed = 0;
-  let totalDaysShown = 7;
+  const cal = document.getElementById('calendar');
+  cal.innerHTML = '';
 
-  const baseDate = new Date(state.viewOffsetDate);
-  
-  for (let i = totalDaysShown - 1; i >= 0; i--) {
-    const date = new Date(baseDate); 
-    date.setDate(baseDate.getDate() - i);
-    
-    const key = dateKey(date), done = !!state.records[key];
-    if (done) completed++;
-    
-    const btn = document.createElement('button'); 
-    btn.type = 'button'; 
-    btn.className = 'day' + (done ? ' done' : '') + (dateKey(date) === dateKey(state.selectedDate) ? ' selected' : '');
-    btn.innerHTML = `<span class="day-name">${weekdays[date.getDay()]}</span><span class="num">${date.getDate()}</span><span class="dot"></span>`;
-    btn.addEventListener('click', () => selectDate(date)); 
-    cal.appendChild(btn);
+  const totalDaysShown = 7;
+  // الشريط يبدأ من تاريخ التثبيت (viewAnchorDate) ولا يتغير مكان الشريط أبداً عند الضغط على الأيام
+  const baseDate = new Date(state.viewAnchorDate);
+
+  const dates = [];
+  for (let i = 0; i < totalDaysShown; i++) {
+    const d = new Date(baseDate);
+    d.setDate(baseDate.getDate() + i);
+    dates.push(d);
   }
 
-  const oldestDate = new Date(baseDate); oldestDate.setDate(baseDate.getDate() - (totalDaysShown - 1));
-  $('monthLabel').textContent = `${oldestDate.getDate()} ${monthNames[oldestDate.getMonth()]} - ${baseDate.getDate()} ${monthNames[baseDate.getMonth()]}`;
-  
-  $('completedCount').textContent = `${completed} أيام مسجلة`;
-  $('monthProgress').style.width = `${Math.round(completed / totalDaysShown * 100)}%`;
-  $('progressText').textContent = `${completed} من ${totalDaysShown} أيام`;
+  let completed = 0;
+  const selectedKey = `${state.selectedDate.getFullYear()}-${String(state.selectedDate.getMonth() + 1).padStart(2, '0')}-${String(state.selectedDate.getDate()).padStart(2, '0')}`;
+
+  dates.forEach((date) => {
+    const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+    const isDone = !!state.records[key] && Object.values(state.records[key]).some(v => Array.isArray(v) ? v.length > 0 : !!v);
+    
+    if (isDone) completed++;
+
+    // اليوم المختار فقط هو الذي سيتلون باللون المتدرج دون أن يحرك مكان الشريط
+    const isSelected = (key === selectedKey);
+
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    
+    if (isSelected) {
+      btn.className = 'flex flex-col items-center justify-center p-1.5 rounded-xl border border-transparent text-white shadow-md transform scale-105';
+      btn.style.background = 'linear-gradient(135deg, #C93A8C 0%, #107EAF 100%)';
+    } else if (isDone) {
+      btn.className = 'flex flex-col items-center justify-center p-1.5 rounded-xl border border-[#C93A8C]/30 text-[#762454] hover:bg-[#F4D3E6] transition-all';
+      btn.style.background = '#FBEAF3';
+    } else {
+      btn.className = 'flex flex-col items-center justify-center p-1.5 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-50 transition-all';
+      btn.style.background = '#FFFFFF';
+    }
+
+    btn.innerHTML = `
+      <span class="text-[9px] font-bold opacity-90 mb-0.5 pointer-events-none">${weekdays[date.getDay()]}</span>
+      <span class="text-xs font-black pointer-events-none">${date.getDate()}</span>
+      <span class="w-1 h-1 rounded-full mt-1 ${isDone ? (isSelected ? 'bg-white' : 'bg-[#C93A8C]') : 'bg-transparent'} pointer-events-none"></span>
+    `;
+
+    // عند الضغط على أي يوم، يتحدد ويتلون فوراً في مكانه دون تحريك الشريط
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      selectDate(date);
+    });
+
+    cal.appendChild(btn);
+  });
+
+  const start = dates[0];
+  const end = dates[6];
+
+  document.getElementById('monthLabel').textContent = `${start.getDate()} ${monthNames[start.getMonth()]} - ${end.getDate()} ${monthNames[end.getMonth()]} ${end.getFullYear()}`;
+  document.getElementById('weekRangeIndicator').textContent = `${formatDate(state.selectedDate)}`;
+
+  const percentage = Math.round((completed / totalDaysShown) * 100);
+  document.getElementById('completedCount').textContent = `${completed} أيام مسجلة`;
+  document.getElementById('monthProgress').style.width = `${Math.min(percentage, 100)}%`;
+  document.getElementById('progressText').textContent = `${percentage}%`;
+  document.getElementById('journalQuickSummary').textContent = `تم تسجيل ${completed} أيام (${percentage}% إنجاز)`;
 }
 
 function getFormData() {
-  const form = $('dailyForm'); 
-  const data = {};
-  ['otherDifficulty', 'dailyNotes'].forEach(id => data[id] = $(id).value.trim());
-  ['water', 'activity', 'meals', 'protein', 'sweets'].forEach(name => data[name] = form.querySelector(`input[name="${name}"]:checked`)?.value || '');
-  data.sleep = form.querySelector('input[name="sleep"]:checked')?.value || '';
+  const form = document.getElementById('dailyForm');
+  const data = {
+    otherDifficulty: document.getElementById('otherDifficulty').value.trim(),
+    dailyNotes: document.getElementById('dailyNotes').value.trim()
+  };
+
+  ['water', 'activity', 'meals', 'protein', 'sweets', 'sleep'].forEach(name => {
+    const checked = form.querySelector(`input[name="${name}"]:checked`);
+    data[name] = checked ? checked.value : '';
+  });
+
   data.difficulty = [...form.querySelectorAll('input[name="difficulty"]:checked')].map(el => el.value);
   return data;
 }
 
 function fillForm(data = {}) {
-  ['otherDifficulty', 'dailyNotes'].forEach(id => $(id).value = data[id] || '');
-  ['water', 'activity', 'meals', 'protein', 'sweets'].forEach(name => {
-    document.querySelectorAll(`input[name="${name}"]`).forEach(el => el.checked = (el.value === (data[name] || '')));
+  document.getElementById('otherDifficulty').value = data.otherDifficulty || '';
+  document.getElementById('dailyNotes').value = data.dailyNotes || '';
+
+  ['water', 'activity', 'meals', 'protein', 'sweets', 'sleep'].forEach(name => {
+    document.querySelectorAll(`input[name="${name}"]`).forEach(el => {
+      el.checked = el.value === (data[name] || '');
+    });
   });
-  document.querySelectorAll('input[name="sleep"]').forEach(el => el.checked = (el.value === (data.sleep || '')));
-  document.querySelectorAll('input[name="difficulty"]').forEach(el => el.checked = (data.difficulty || []).includes(el.value));
-  updateOtherDifficulty(); 
-  $('reportBox').classList.remove('show');
-  $('weeklyReportBox').classList.remove('show');
-  $('saveStatus').textContent = data && Object.values(data).some(v => Array.isArray(v) ? v.length > 0 : !!v) ? 'بيانات محفوظة ✓' : 'مسودة جديدة';
-}
 
-function selectDate(date) {
-  state.selectedDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-  $('selectedDateLabel').textContent = formatDate(state.selectedDate);
-  fillForm(state.records[dateKey(state.selectedDate)] || {}); 
-  renderCalendar();
-}
+  document.querySelectorAll('input[name="difficulty"]').forEach(el => {
+    el.checked = (data.difficulty || []).includes(el.value);
+  });
 
-function updateOtherDifficulty() {
-  const other = document.querySelector('input[name="difficulty"][value="سبب آخر"]');
-  $('otherDifficultyWrap').hidden = !other || !other.checked;
-  const none = document.querySelector('input[name="difficulty"][value="لم أواجه صعوبات"]');
-  if (none && none.checked) {
-    document.querySelectorAll('input[name="difficulty"]').forEach(el => { if (el !== none) el.checked = false; });
-  } else if (none) {
-    none.checked = false;
+  updateOtherDifficultyVisibility();
+  document.getElementById('reportBox').classList.add('hidden');
+  
+  const hasData = data && Object.values(data).some(v => Array.isArray(v) ? v.length > 0 : !!v);
+  const statusEl = document.getElementById('saveStatus');
+  if (hasData) {
+    statusEl.textContent = 'محفوظ ✓';
+    statusEl.className = 'text-xs font-bold px-2.5 py-0.5 rounded-xl bg-teal-50 text-teal-700 border border-teal-200';
+  } else {
+    statusEl.textContent = 'مسودة جديدة';
+    statusEl.className = 'text-xs font-bold px-2.5 py-0.5 rounded-xl bg-amber-50 text-amber-700 border border-amber-200';
   }
 }
 
-document.querySelectorAll('input[name="difficulty"]').forEach(el => el.addEventListener('change', updateOtherDifficulty));
-
-$('saveDayBtn').addEventListener('click', () => {
-  state.records[dateKey(state.selectedDate)] = getFormData();
-  localStorage.setItem('daily_records', JSON.stringify(state.records));
-  $('saveStatus').textContent = 'اتحفظت في المعاينة ✓'; 
+function selectDate(date) {
+  // إنشاء كائن تاريخ جديد تماماً لمنع تداخل المراجع
+  state.selectedDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  document.getElementById('selectedDateLabel').textContent = formatDate(state.selectedDate);
+  fillForm(state.records[dateKey(state.selectedDate)] || {});
   renderCalendar();
+}
+
+function updateOtherDifficultyVisibility() {
+  const otherCheckbox = document.querySelector('input[name="difficulty"][value="سبب آخر"]');
+  const wrap = document.getElementById('otherDifficultyWrap');
+  wrap.classList.toggle('hidden', !otherCheckbox.checked);
+
+  const noneCheckbox = document.querySelector('input[name="difficulty"][value="لم أواجه صعوبات"]');
+  if (noneCheckbox && noneCheckbox.checked) {
+    document.querySelectorAll('input[name="difficulty"]').forEach(el => {
+      if (el !== noneCheckbox) el.checked = false;
+    });
+    wrap.classList.add('hidden');
+  }
+}
+
+document.querySelectorAll('input[name="difficulty"]').forEach(el => {
+  el.addEventListener('change', updateOtherDifficultyVisibility);
 });
 
-// تجهيز التقرير اليومي 
-$('prepareReportBtn').addEventListener('click', () => {
-  const d = getFormData();
-  const dateStr = formatDate(state.selectedDate);
+// Save Day Event
+document.getElementById('saveDayBtn').addEventListener('click', () => {
+  const key = dateKey(state.selectedDate);
+  state.records[key] = getFormData();
+  saveToLocalStorage();
+  renderCalendar();
   
-  const cardHtml = `
-    <div class="daily-report-card">
-      <div class="daily-report-header">
-        <span>📅 ${dateStr}</span>
-        <span style="color:#C93A8C; font-size:12px;">مكتمل ✓</span>
-      </div>
-      <div class="daily-report-grid">
-        <div class="daily-report-item">🏃 النشاط: <b>${d.activity || 'غير مسجل'}</b></div>
-        <div class="daily-report-item">💧 المياه: <b>${d.water || 'غير مسجل'}</b></div>
-        <div class="daily-report-item">🍽️ الوجبات: <b>${d.meals || 'غير مسجل'}</b></div>
-        <div class="daily-report-item">🥚 البروتين: <b>${d.protein || 'غير مسجل'}</b></div>
-        <div class="daily-report-item">🍫 الحلويات: <b>${d.sweets || 'غير مسجل'}</b></div>
-        <div class="daily-report-item">😴 النوم: <b>${d.sleep || 'غير مسجل'}</b></div>
-      </div>
-      ${d.difficulty && d.difficulty.length ? `<div style="margin-top:6px; font-size:11px; color:#C93A8C;">🧩 الصعوبات: ${d.difficulty.join('، ')} ${d.otherDifficulty ? '(' + d.otherDifficulty + ')' : ''}</div>` : ''}
-      ${d.dailyNotes ? `<div style="margin-top:4px; font-size:11px; color:#30253A; background:#FFF; padding:4px 6px; border-radius:4px; border:1px solid #EEDCE8;">📝 <b>ملاحظات:</b> ${d.dailyNotes}</div>` : ''}
+  const statusEl = document.getElementById('saveStatus');
+  statusEl.textContent = 'تم الحفظ بنجاح ✓';
+  statusEl.className = 'text-xs font-bold px-2.5 py-0.5 rounded-xl bg-[#FBEAF3] text-[#762454] border border-[#C93A8C]/30';
+  
+  setTimeout(() => {
+    statusEl.textContent = 'محفوظ ✓';
+  }, 2000);
+});
+
+// Creative Daily Report Card Generator
+document.getElementById('prepareReportBtn').addEventListener('click', () => {
+  const d = getFormData();
+  document.getElementById('cardDateSubtitle').textContent = formatDate(state.selectedDate);
+
+  const badgesGrid = document.getElementById('dailyVisualBadges');
+  badgesGrid.innerHTML = `
+    <div class="bg-white p-2.5 rounded-xl border border-slate-200 shadow-2xs flex flex-col justify-between">
+      <span class="text-[9px] text-slate-400 font-bold">💧 المياه</span>
+      <span class="text-xs font-black text-[#107EAF] mt-0.5">${d.water || 'لم يسجل'}</span>
+    </div>
+    <div class="bg-white p-2.5 rounded-xl border border-slate-200 shadow-2xs flex flex-col justify-between">
+      <span class="text-[9px] text-slate-400 font-bold">🏃 النشاط</span>
+      <span class="text-xs font-black text-[#C93A8C] mt-0.5">${d.activity || 'لم يسجل'}</span>
+    </div>
+    <div class="bg-white p-2.5 rounded-xl border border-slate-200 shadow-2xs flex flex-col justify-between">
+      <span class="text-[9px] text-slate-400 font-bold">🍽️ الوجبات</span>
+      <span class="text-xs font-black text-slate-700 mt-0.5">${d.meals || 'لم يسجل'}</span>
+    </div>
+    <div class="bg-white p-2.5 rounded-xl border border-slate-200 shadow-2xs flex flex-col justify-between">
+      <span class="text-[9px] text-slate-400 font-bold">🥚 البروتين</span>
+      <span class="text-xs font-black text-[#C93A8C] mt-0.5">${d.protein || 'لم يسجل'}</span>
+    </div>
+    <div class="bg-white p-2.5 rounded-xl border border-slate-200 shadow-2xs flex flex-col justify-between">
+      <span class="text-[9px] text-slate-400 font-bold">🍫 الحلويات</span>
+      <span class="text-xs font-black text-amber-600 mt-0.5">${d.sweets || 'لم يسجل'}</span>
+    </div>
+    <div class="bg-white p-2.5 rounded-xl border border-slate-200 shadow-2xs flex flex-col justify-between">
+      <span class="text-[9px] text-slate-400 font-bold">😴 النوم</span>
+      <span class="text-xs font-black text-[#107EAF] mt-0.5">${d.sleep || 'لم يسجل'}</span>
     </div>
   `;
 
-  $('singleDailyReportContent').innerHTML = cardHtml;
-  $('weeklyReportBox').classList.remove('show');
-  $('reportBox').classList.add('show');
-  $('reportBox').scrollIntoView({ behavior: 'smooth' });
+  const notesWrap = document.getElementById('dailyCardNotesWrap');
+  const notesText = document.getElementById('dailyCardNotesText');
+  
+  if (d.dailyNotes) {
+    notesWrap.classList.remove('hidden');
+    notesText.textContent = d.dailyNotes;
+  } else {
+    notesWrap.classList.add('hidden');
+  }
+
+  const reportBox = document.getElementById('reportBox');
+  reportBox.classList.remove('hidden');
+  reportBox.scrollIntoView({ behavior: 'smooth' });
 });
 
-$('downloadDailyImageBtn').addEventListener('click', async () => {
-  const container = $('dailyImageContainer');
-  $('shareNote').textContent = 'جاري تصدير التقرير اليومي كصورة...';
+// حفظ التقرير اليومي كصورة
+document.getElementById('downloadDailyImageBtn').addEventListener('click', async () => {
+  const container = document.getElementById('dailyImageContainer');
+  document.getElementById('shareNote').textContent = 'جاري تصدير الصورة...';
   try {
     const canvas = await html2canvas(container, { scale: 2, backgroundColor: '#FFFFFF' });
     const link = document.createElement('a');
     link.href = canvas.toDataURL('image/png');
     link.download = 'التقرير-اليومي.png';
     link.click();
-    $('shareNote').textContent = 'تم تحميل التقرير اليومي كصورة بنجاح! ✓';
+    document.getElementById('shareNote').textContent = 'تم تحميل الصورة بنجاح! ✓';
   } catch (err) {
-    $('shareNote').textContent = 'تعذر تصدير الصورة.';
+    document.getElementById('shareNote').textContent = 'تعذر تصدير الصورة.';
   }
 });
 
-// مشاركة التقرير
-$('shareDailyImageBtn').addEventListener('click', async () => {
-  const container = $('dailyImageContainer');
-  $('shareNote').textContent = 'جاري تجهيز الصورة للمشاركة...';
+// مشاركة التقرير اليومي كصورة لأي تطبيق
+document.getElementById('shareBtn').addEventListener('click', async () => {
+  const container = document.getElementById('dailyImageContainer');
+  document.getElementById('shareNote').textContent = 'جاري تجهيز الصورة للمشاركة...';
   try {
     const canvas = await html2canvas(container, { scale: 2, backgroundColor: '#FFFFFF' });
     canvas.toBlob(async (blob) => {
@@ -425,118 +675,206 @@ $('shareDailyImageBtn').addEventListener('click', async () => {
       if (navigator.canShare && navigator.canShare({ files: [file] })) {
         await navigator.share({
           files: [file],
-          title: 'تقرير المتابعة اليومي',
-          text: 'إليك تقرير المتابعة اليومي الخاص بي 💚'
+          title: 'متابعتي اليومية',
+          text: 'إليك تقرير المتابعة اليومي 💚'
         });
-        $('shareNote').textContent = 'تم فتح نافذة المشاركة بنجاح! ✓';
+        document.getElementById('shareNote').textContent = 'تمت المشاركة بنجاح! ✓';
       } else {
-        // بديل في حال عدم دعم المتصفح لمشاركة الملفات
         const link = document.createElement('a');
         link.href = canvas.toDataURL('image/png');
         link.download = 'التقرير-اليومي.png';
         link.click();
-        $('shareNote').textContent = 'تم حفظ الصورة، يمكنك مشاركتها يدويًا من ألبوم الصور.';
+        document.getElementById('shareNote').textContent = 'تم حفظ الصورة، يمكنك مشاركتها من ألبوم الصور.';
       }
     }, 'image/png');
   } catch (err) {
-    $('shareNote').textContent = 'تعذرت المشاركة المباشرة.';
+    document.getElementById('shareNote').textContent = 'تعذرت المشاركة المباشرة.';
   }
 });
 
-// تجهيز التقرير الاسبوعي
-$('prepareWeeklyReportBtn').addEventListener('click', () => {
-  const baseDate = new Date(state.viewOffsetDate);
-  let daysHtml = '';
+// تقرير المتابعة الأسبوعي
+document.getElementById('openJournalBookBtn').addEventListener('click', () => {
+  // جمع كل المفاتيح المسجلة في الـ localStorage وترتيبها تنازلياً (الأحدث أولاً)
+  const savedKeys = Object.keys(state.records).sort();
+  
+  document.getElementById('bookTitleRange').textContent = `التقرير الاسبوعي (${savedKeys.length} يوم مسجل)`;
 
-  for (let i = 6; i >= 0; i--) {
-    const date = new Date(baseDate); date.setDate(baseDate.getDate() - i);
-    const key = dateKey(date);
-    const d = state.records[key];
-    const dateStr = formatDate(date);
+  let totalLoggedDays = savedKeys.length;
+  let totalWaterML = 0;
+  const container = document.getElementById('bookPagesContainer');
+  container.innerHTML = '';
 
-    if (d) {
-      daysHtml += `
-        <div class="daily-report-card">
-          <div class="daily-report-header">
-            <span>📅 ${dateStr}</span>
-            <span style="color:#C93A8C; font-size:12px;">مكتمل ✓</span>
+  if (savedKeys.length === 0) {
+    container.innerHTML = `
+      <div class="text-center py-8 text-slate-400 text-xs font-bold">
+        لم تقومي بتسجيل أي أيام حتى الآن. ابدئي بحفظ بيانات أي يوم! 💚
+      </div>
+    `;
+  } else {
+    savedKeys.forEach((key) => {
+      const rec = state.records[key];
+      const parts = key.split('-');
+      const date = new Date(parts[0], parts[1] - 1, parts[2]);
+      
+      if (rec.water) {
+        const ml = parseInt(rec.water);
+        if (!isNaN(ml)) totalWaterML += ml;
+      }
+
+      const dayName = weekdays[date.getDay()];
+      const pageCard = document.createElement('div');
+      pageCard.className = `p-3.5 rounded-xl border bg-white border-[#C93A8C]/30 shadow-xs space-y-2`;
+
+      pageCard.innerHTML = `
+        <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+          <div class="flex items-center gap-2">
+            <span class="w-6 h-6 rounded-lg brand-gradient text-white text-[11px] font-bold flex items-center justify-center">${date.getDate()}</span>
+            <span class="font-black text-[#762454] text-xs">${dayName} (${date.getDate()} ${monthNames[date.getMonth()]} ${date.getFullYear()})</span>
           </div>
-          <div class="daily-report-grid">
-            <div class="daily-report-item">🏃 النشاط: <b>${d.activity || 'غير مسجل'}</b></div>
-            <div class="daily-report-item">💧 المياه: <b>${d.water || 'غير مسجل'}</b></div>
-            <div class="daily-report-item">🍽️ الوجبات: <b>${d.meals || 'غير مسجل'}</b></div>
-            <div class="daily-report-item">🥚 البروتين: <b>${d.protein || 'غير مسجل'}</b></div>
-            <div class="daily-report-item">🍫 الحلويات: <b>${d.sweets || 'غير مسجل'}</b></div>
-            <div class="daily-report-item">😴 النوم: <b>${d.sleep || 'غير مسجل'}</b></div>
-          </div>
-          ${d.difficulty && d.difficulty.length ? `<div style="margin-top:6px; font-size:11px; color:#C93A8C;">🧩 الصعوبات: ${d.difficulty.join('، ')}</div>` : ''}
-          ${d.dailyNotes ? `<div style="margin-top:4px; font-size:11px; color:#30253A;">📝 ملاحظات: ${d.dailyNotes}</div>` : ''}
+          <span class="text-[9px] bg-[#FBEAF3] text-[#762454] px-2 py-0.5 rounded font-extrabold">مكتمل ✓</span>
         </div>
-      `;
-    } else {
-      daysHtml += `
-        <div class="daily-report-card" style="opacity: 0.5;">
-          <div class="daily-report-header">
-            <span>📅 ${dateStr}</span>
-            <span style="color:#6C827A; font-size:12px;">لم يتم التسجيل</span>
-          </div>
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-1.5 text-[11px]">
+          <div class="bg-[#FAFAFC] p-2 rounded-lg border border-slate-100"><span class="text-slate-400 block text-[9px]">💧 المياه</span><strong class="text-[#107EAF]">${rec.water || '-'}</strong></div>
+          <div class="bg-[#FAFAFC] p-2 rounded-lg border border-slate-100"><span class="text-slate-400 block text-[9px]">🏃 النشاط</span><strong class="text-[#C93A8C]">${rec.activity || '-'}</strong></div>
+          <div class="bg-[#FAFAFC] p-2 rounded-lg border border-slate-100"><span class="text-slate-400 block text-[9px]">🍽️ الوجبات</span><strong>${rec.meals || '-'}</strong></div>
+          <div class="bg-[#FAFAFC] p-2 rounded-lg border border-slate-100"><span class="text-slate-400 block text-[9px]">🥚 البروتين</span><strong>${rec.protein || '-'}</strong></div>
+          <div class="bg-[#FAFAFC] p-2 rounded-lg border border-slate-100"><span class="text-slate-400 block text-[9px]">🍫 الحلويات</span><strong class="text-amber-600">${rec.sweets || '-'}</strong></div>
+          <div class="bg-[#FAFAFC] p-2 rounded-lg border border-slate-100"><span class="text-slate-400 block text-[9px]">😴 النوم</span><strong class="text-[#107EAF]">${rec.sleep || '-'}</strong></div>
         </div>
+        ${rec.difficulty && rec.difficulty.length > 0 ? `<div class="text-[10px] bg-amber-50/60 p-2 rounded-lg border border-amber-200 text-amber-800"><strong>🧩 الصعوبات:</strong> ${rec.difficulty.join('، ')} ${rec.otherDifficulty ? '(' + rec.otherDifficulty + ')' : ''}</div>` : ''}
+        ${rec.dailyNotes ? `<div class="text-[10px] bg-slate-50 p-2 rounded-lg border border-slate-200 text-slate-700 italic"><strong>📝 ملاحظات:</strong> ${rec.dailyNotes}</div>` : ''}
       `;
-    }
+
+      container.appendChild(pageCard);
+    });
   }
 
-  $('weeklyDaysList').innerHTML = daysHtml;
-  $('reportBox').classList.remove('show');
-  $('weeklyReportBox').classList.add('show');
-  $('weeklyReportBox').scrollIntoView({ behavior: 'smooth' });
+  document.getElementById('bookStatDays').textContent = `${totalLoggedDays} يوم`;
+  document.getElementById('bookStatWater').textContent = `${totalWaterML.toLocaleString()} مل`;
+  document.getElementById('bookStatScore').textContent = totalLoggedDays > 0 ? 'نشط 🌟' : '0%';
+
+  document.getElementById('journalModal').classList.remove('hidden');
 });
 
-$('downloadImageBtn').addEventListener('click', async () => {
-  const container = $('weeklyImageContainer');
-  $('weeklyShareNote').textContent = 'جاري تجهيز وتصدير التقرير كصورة...';
+document.getElementById('closeJournalModal').addEventListener('click', () => {
+  document.getElementById('journalModal').classList.add('hidden');
+});
+
+// حفظ التقرير الأسبوعي كصورة 
+document.getElementById('downloadBookImageBtn').addEventListener('click', async () => {
+  const container = document.getElementById('weeklyImageContainer');
+  const modalContent = container.closest('.bg-\\[\\#FCFBFC\\]'); // نافذة المودال الداخلية
+  const header = document.getElementById('bookExportHeader');
+  
+  header.classList.remove('hidden');
+  document.getElementById('bookShareNote').textContent = 'جاري تصدير التقرير الاسبوعي كصورة...';
+
+  // حفظ الأوضاع الأصلية لتعديلها مؤقتاً أثناء التصدير
+  const originalMaxHeight = modalContent.style.maxHeight;
+  const originalOverflow = container.style.overflow;
+  const originalHeight = container.style.height;
+
+  // إزالة القيود مؤقتاً ليلتقط المكتبة الصفحة بالكامل
+  modalContent.style.maxHeight = 'none';
+  container.style.overflow = 'visible';
+  container.style.height = 'auto';
+
   try {
-    const canvas = await html2canvas(container, { scale: 2, backgroundColor: '#FFFFFF' });
+    const canvas = await html2canvas(container, { 
+      scale: 2, 
+      backgroundColor: '#FFFFFF',
+      useCORS: true,
+      windowHeight: container.scrollHeight + 100
+    });
+    
+    // إرجاع الأوضاع الأصلية للمودال
+    modalContent.style.maxHeight = originalMaxHeight;
+    container.style.overflow = originalOverflow;
+    container.style.height = originalHeight;
+    header.classList.add('hidden');
+
     const link = document.createElement('a');
     link.href = canvas.toDataURL('image/png');
-    link.download = 'التقرير-الشامل.png';
+    link.download = 'التقرير الاسبوعي.png';
     link.click();
-    $('weeklyShareNote').textContent = 'تم تحميل التقرير كصورة بنجاح! ✓';
+    document.getElementById('bookShareNote').textContent = 'تم تحميل التقرير الاسبوعي كصورة بنجاح! ✓';
   } catch (err) {
-    $('weeklyShareNote').textContent = 'تعذر تصدير الصورة.';
+    modalContent.style.maxHeight = originalMaxHeight;
+    container.style.overflow = originalOverflow;
+    container.style.height = originalHeight;
+    header.classList.add('hidden');
+    document.getElementById('bookShareNote').textContent = 'تعذر تصدير الصورة.';
   }
 });
 
 // مشاركة التقرير الاسبوعي
-$('shareImageBtn').addEventListener('click', async () => {
-  const container = $('weeklyImageContainer');
-  $('weeklyShareNote').textContent = 'جاري تجهيز الصورة للمشاركة...';
+document.getElementById('shareBookBtn').addEventListener('click', async () => {
+  const container = document.getElementById('weeklyImageContainer');
+  const modalContent = container.closest('.bg-\\[\\#FCFBFC\\]');
+  const header = document.getElementById('bookExportHeader');
+  
+  header.classList.remove('hidden');
+  document.getElementById('bookShareNote').textContent = 'جاري تجهيز الصورة للمشاركة...';
+
+  const originalMaxHeight = modalContent.style.maxHeight;
+  const originalOverflow = container.style.overflow;
+  const originalHeight = container.style.height;
+
+  modalContent.style.maxHeight = 'none';
+  container.style.overflow = 'visible';
+  container.style.height = 'auto';
+
   try {
-    const canvas = await html2canvas(container, { scale: 2, backgroundColor: '#FFFFFF' });
+    const canvas = await html2canvas(container, { 
+      scale: 2, 
+      backgroundColor: '#FFFFFF',
+      useCORS: true,
+      windowHeight: container.scrollHeight + 100
+    });
+    
+    modalContent.style.maxHeight = originalMaxHeight;
+    container.style.overflow = originalOverflow;
+    container.style.height = originalHeight;
+    header.classList.add('hidden');
+
     canvas.toBlob(async (blob) => {
-      const file = new File([blob], 'التقرير-الاسبوعي.png', { type: 'image/png' });
+      const file = new File([blob], 'التقرير الاسبوعي.png', { type: 'image/png' });
       if (navigator.canShare && navigator.canShare({ files: [file] })) {
         await navigator.share({
           files: [file],
           title: 'تقرير المتابعة الاسبوعي',
-          text: 'إليك تقرير المتابعة الاسبوعي الخاص بي 💚'
+          text: 'إليك  التقرير الاسبوعي الخاص بي 💚'
         });
-        $('weeklyShareNote').textContent = 'تم فتح نافذة المشاركة بنجاح! ✓';
+        document.getElementById('bookShareNote').textContent = 'تمت المشاركة بنجاح! ✓';
       } else {
         const link = document.createElement('a');
         link.href = canvas.toDataURL('image/png');
-        link.download = 'التقرير-الاسبوعي.png';
+        link.download = 'التقرير الاسبوعي.png';
         link.click();
-        $('weeklyShareNote').textContent = 'تم حفظ الصورة، يمكنك مشاركتها يدويًا من ألبوم الصور.';
+        document.getElementById('bookShareNote').textContent = 'تم حفظ الصورة، يمكنك مشاركتها يدوياً.';
       }
     }, 'image/png');
   } catch (err) {
-    $('weeklyShareNote').textContent = 'تعذرت المشاركة المباشرة.';
+    modalContent.style.maxHeight = originalMaxHeight;
+    container.style.overflow = originalOverflow;
+    container.style.height = originalHeight;
+    header.classList.add('hidden');
+    document.getElementById('bookShareNote').textContent = 'تعذرت المشاركة المباشرة.';
   }
 });
 
-$('prevDays').addEventListener('click', () => { state.viewOffsetDate.setDate(state.viewOffsetDate.getDate() - 7); renderCalendar(); });
-$('nextDays').addEventListener('click', () => { state.viewOffsetDate.setDate(state.viewOffsetDate.getDate() + 7); renderCalendar(); });
+document.getElementById('prevDays').addEventListener('click', () => {
+  state.viewAnchorDate.setDate(state.viewAnchorDate.getDate() - 7);
+  renderCalendar();
+});
 
+document.getElementById('nextDays').addEventListener('click', () => {
+  state.viewAnchorDate.setDate(state.viewAnchorDate.getDate() + 7);
+  renderCalendar();
+});
+
+// Initial Load
+renderCalendar();
 selectDate(state.selectedDate);
 </script>
 </body>
