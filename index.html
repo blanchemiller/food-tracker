@@ -270,7 +270,7 @@
         <!-- Other Difficulty details -->
         <div id="otherDifficultyWrap" class="hidden space-y-1">
           <label class="block font-bold text-xs text-slate-700">تفاصيل السبب الآخر:</label>
-          <input type="text" id="otherDifficulty" name="otherDifficulty" placeholder="اكتبي التفاصيل هنا..." class="w-full p-2.5 bg-white border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-[#C93A8C] outline-none">
+          <textarea id="otherDifficulty" name="otherDifficulty" rows="2" placeholder="اكتبي تفاصيل السبب الآخر هنا..." class="w-full p-2.5 bg-white border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-[#C93A8C] outline-none min-h-[50px] resize-y break-words"></textarea>
         </div>
 
         <!-- Daily Notes -->
@@ -313,13 +313,13 @@
           <!-- Difficulty Box in UI (يظهر لو فيه صعوبات مسجلة) -->
           <div id="dailyCardDifficultyWrap" class="hidden bg-[#FFFBFA] border border-red-100 p-2.5 rounded-xl relative z-10">
             <p class="text-[10px] font-extrabold text-red-600 mb-0.5">⚠️ الصعوبات:</p>
-            <p id="dailyCardDifficultyText" class="text-[11px] text-slate-700"></p>
+            <p id="dailyCardDifficultyText" class="text-[11px] text-slate-700 whitespace-pre-wrap break-words [overflow-wrap:anywhere]"></p>
           </div>
 
           <!-- Daily Notes Box if exists -->
           <div id="dailyCardNotesWrap" class="hidden bg-white/90 border border-slate-200 p-2.5 rounded-xl relative z-10">
             <p class="text-[10px] font-extrabold text-[#762454] mb-0.5">📝 ملاحظاتك:</p>
-            <p id="dailyCardNotesText" class="text-[11px] text-slate-700 italic"></p>
+            <p id="dailyCardNotesText" class="text-[11px] text-slate-700 italic whitespace-pre-wrap break-words [overflow-wrap:anywhere]"></p>
           </div>
         </div>
 
@@ -646,6 +646,36 @@ document.getElementById('prepareReportBtn').addEventListener('click', () => {
 });
 
 // دالة تصدير الكانفاس المصقولة بالكامل
+// لفّ النص داخل الصور بحيث لا يخرج أي نص طويل خارج الصندوق، بما في ذلك الكلمات الطويلة والأسطر الجديدة.
+function wrapCanvasText(ctx, text, maxWidth) {
+  const result = [];
+  const paragraphs = String(text ?? '').split(/\r?\n/);
+  for (const paragraph of paragraphs) {
+    const words = paragraph.split(/\s+/).filter(Boolean);
+    if (!words.length) { result.push(''); continue; }
+    let line = '';
+    for (const word of words) {
+      // تقسيم الكلمة نفسها إذا كانت أطول من عرض الصندوق.
+      let chunks = [word];
+      if (ctx.measureText(word).width > maxWidth) {
+        chunks = []; let chunk = '';
+        for (const char of word) {
+          if (chunk && ctx.measureText(chunk + char).width > maxWidth) { chunks.push(chunk); chunk = char; }
+          else chunk += char;
+        }
+        if (chunk) chunks.push(chunk);
+      }
+      for (const chunk of chunks) {
+        const candidate = line ? `${line} ${chunk}` : chunk;
+        if (line && ctx.measureText(candidate).width > maxWidth) { result.push(line); line = chunk; }
+        else line = candidate;
+      }
+    }
+    result.push(line);
+  }
+  return result.length ? result : [''];
+}
+
 async function captureDailyCardCanvas() {
   try {
     const d = getFormData();
@@ -664,43 +694,19 @@ async function captureDailyCardCanvas() {
     }
     const hasDifficulty = diffCanvasText !== '';
 
-    const notesText = d.dailyNotes;
-    const hasNotes = notesText !== '';
-
-    let notesLines = [];
-    if (hasNotes) {
-      const maxLineWidth = 340;
-      const ctxTemp = document.createElement('canvas').getContext('2d');
-      ctxTemp.font = '400 9px "Tajawal", sans-serif';
-      
-      let words = notesText.split(' ');
-      let currentLine = '';
-      
-      for (let i = 0; i < words.length; i++) {
-        let testLine = currentLine + words[i] + ' ';
-        if (ctxTemp.measureText(testLine).width > maxLineWidth && i > 0) {
-          notesLines.push(currentLine);
-          currentLine = words[i] + ' ';
-        } else {
-          currentLine = testLine;
-        }
-      }
-      notesLines.push(currentLine);
-      if (notesLines.length > 2) {
-        notesLines = notesLines.slice(0, 2);
-        notesLines[1] += '...';
-      }
-    }
+    const notesText = d.dailyNotes || '';
+    const hasNotes = notesText.trim() !== '';
+    const textMeasureCanvas = document.createElement('canvas');
+    const textMeasureCtx = textMeasureCanvas.getContext('2d');
+    textMeasureCtx.font = '400 9px "Tajawal", sans-serif';
+    const diffLines = hasDifficulty ? wrapCanvasText(textMeasureCtx, diffCanvasText, 350) : [];
+    const notesLines = hasNotes ? wrapCanvasText(textMeasureCtx, notesText, 350) : [];
 
     const canvas = document.createElement('canvas');
     const width = 420; 
     let baseHeight = 242;
-    if (hasDifficulty) {
-      baseHeight += 38;
-    }
-    if (hasNotes) {
-      baseHeight += (notesLines.length > 1 ? 52 : 38);
-    }
+    if (hasDifficulty) baseHeight += Math.max(38, 27 + diffLines.length * 12);
+    if (hasNotes) baseHeight += Math.max(38, 28 + notesLines.length * 12);
     const height = baseHeight;
     
     canvas.width = width * 2;
@@ -833,7 +839,8 @@ async function captureDailyCardCanvas() {
       ctx.fillStyle = '#FFFBFA';
       ctx.strokeStyle = '#FEE2E2';
       ctx.beginPath();
-      ctx.roundRect(22, currentYOffset, width - 44, 32, 10);
+      const difficultyBoxHeight = Math.max(32, 22 + diffLines.length * 12);
+      ctx.roundRect(22, currentYOffset, width - 44, difficultyBoxHeight, 10);
       ctx.fill();
       ctx.stroke();
 
@@ -844,14 +851,14 @@ async function captureDailyCardCanvas() {
 
       ctx.fillStyle = '#334155';
       ctx.font = '400 9px "Tajawal", sans-serif';
-      ctx.fillText(diffCanvasText, width - 32, currentYOffset + 25);
+      diffLines.forEach((line, lineIndex) => ctx.fillText(line, width - 32, currentYOffset + 25 + lineIndex * 12));
 
-      currentYOffset += 38;
+      currentYOffset += difficultyBoxHeight + 6;
     }
 
     // صندوق الملاحظات في الكانفاس
     if (hasNotes) {
-      let notesBoxHeight = notesLines.length > 1 ? 52 : 38;
+      let notesBoxHeight = Math.max(38, 28 + notesLines.length * 12);
       
       ctx.fillStyle = '#FAFAFC';
       ctx.strokeStyle = '#CBD5E1';
@@ -869,7 +876,7 @@ async function captureDailyCardCanvas() {
       ctx.font = '400 9px "Tajawal", sans-serif';
       
       notesLines.forEach((line, lineIndex) => {
-        let lineY = currentYOffset + 28 + (lineIndex * 12);
+        let lineY = currentYOffset + 27 + (lineIndex * 12);
         ctx.fillText(line, width - 32, lineY);
       });
     }
@@ -910,23 +917,19 @@ document.getElementById('shareBtn').addEventListener('click', async () => {
     const day = String(state.selectedDate.getDate()).padStart(2, '0');
     const fileName = `تقرير-يوم-${year}-${month}-${day}.png`;
 
-    canvas.toBlob(async (blob) => {
-      const file = new File([blob], fileName, { type: 'image/png' });
-      if (navigator.canShare && navigator.canShare({ files: [file] })) {
-        await navigator.share({
-          files: [file],
-          title: 'متابعتي اليومية',
-          text: 'إليك تقرير المتابعة اليومي 💚'
-        });
-        document.getElementById('shareNote').textContent = 'تمت المشاركة بنجاح! ✓';
-      } else {
-        const link = document.createElement('a');
-        link.href = canvas.toDataURL('image/png');
-        link.download = fileName;
-        link.click();
-        document.getElementById('shareNote').textContent = 'تم حفظ الصورة، يمكنك مشاركتها من ألبوم الصور.';
-      }
-    }, 'image/png');
+    const blob = await new Promise((resolve, reject) => canvas.toBlob(b => b ? resolve(b) : reject(new Error('تعذر إنشاء الصورة')), 'image/png'));
+    const file = new File([blob], fileName, { type: 'image/png' });
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      await navigator.share({ files: [file], title: 'متابعتي اليومية', text: 'إليك تقرير المتابعة اليومي 💚' });
+      document.getElementById('shareNote').textContent = 'تمت المشاركة بنجاح! ✓';
+    } else {
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = fileName;
+      link.click();
+      setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+      document.getElementById('shareNote').textContent = 'تم حفظ الصورة، يمكنك مشاركتها من ألبوم الصور.';
+    }
   } catch (err) {
     document.getElementById('shareNote').textContent = 'تعذرت المشاركة المباشرة.';
   }
@@ -1029,39 +1032,21 @@ async function generateWeeklyCanvas() {
     }
     const hasDiff = diffCanvasText !== '';
 
-    // تجهيز الملاحظات والتفاف النص
+    // لفّ الصعوبات والملاحظات على عدة أسطر حسب العرض المتاح.
     const notesText = rec.dailyNotes || '';
-    const hasNotes = notesText !== '';
-    let notesLines = [];
-    if (hasNotes) {
-      const maxLineWidth = 340;
-      const ctxTemp = document.createElement('canvas').getContext('2d');
-      ctxTemp.font = '400 9px "Tajawal", sans-serif';
-      let words = notesText.split(' ');
-      let currentLine = '';
-      for (let i = 0; i < words.length; i++) {
-        let testLine = currentLine + words[i] + ' ';
-        if (ctxTemp.measureText(testLine).width > maxLineWidth && i > 0) {
-          notesLines.push(currentLine);
-          currentLine = words[i] + ' ';
-        } else {
-          currentLine = testLine;
-        }
-      }
-      notesLines.push(currentLine);
-      if (notesLines.length > 2) {
-        notesLines = notesLines.slice(0, 2);
-        notesLines[1] += '...';
-      }
-    }
+    const hasNotes = notesText.trim() !== '';
+    const ctxTemp = document.createElement('canvas').getContext('2d');
+    ctxTemp.font = '400 9px "Tajawal", sans-serif';
+    const diffLines = hasDiff ? wrapCanvasText(ctxTemp, diffCanvasText, 340) : [];
+    const notesLines = hasNotes ? wrapCanvasText(ctxTemp, notesText, 340) : [];
 
     // حساب ارتفاع الكارت لهذا اليوم بناءً على محتواه
     let cardH = 175; // الارتفاع الأساسي للهيدر والكروت الـ 6
-    if (hasDiff) cardH += 38;
-    if (hasNotes) cardH += (notesLines.length > 1 ? 52 : 38);
+    if (hasDiff) cardH += Math.max(38, 27 + diffLines.length * 11);
+    if (hasNotes) cardH += Math.max(38, 28 + notesLines.length * 11);
 
     totalHeight += cardH + 15; // مسافة فاصلة بين الأيام
-    return { rec, dateStr, diffCanvasText, hasDiff, hasNotes, notesLines, cardH };
+    return { rec, dateStr, diffCanvasText, hasDiff, diffLines, hasNotes, notesLines, cardH };
   });
 
   totalHeight += 20; // هامش أخيرة
@@ -1099,7 +1084,7 @@ async function generateWeeklyCanvas() {
 
   // 3. رسم كل يوم كبطاقة منفصلة ومتسلسلة
   processedDays.forEach((dayData) => {
-    const { rec, dateStr, diffCanvasText, hasDiff, hasNotes, notesLines, cardH } = dayData;
+    const { rec, dateStr, diffCanvasText, hasDiff, diffLines, hasNotes, notesLines, cardH } = dayData;
 
     // أ. إطار كارت اليوم الخارجي
     ctx.fillStyle = '#FFFFFF';
@@ -1222,7 +1207,8 @@ async function generateWeeklyCanvas() {
       ctx.fillStyle = '#FFFBFA';
       ctx.strokeStyle = '#FEE2E2';
       ctx.beginPath();
-      ctx.roundRect(25, innerOffset, width - 50, 30, 8);
+      const diffBoxH = Math.max(30, 21 + diffLines.length * 11);
+      ctx.roundRect(25, innerOffset, width - 50, diffBoxH, 8);
       ctx.fill();
       ctx.stroke();
 
@@ -1233,14 +1219,14 @@ async function generateWeeklyCanvas() {
 
       ctx.fillStyle = '#334155';
       ctx.font = '400 8.5px "Tajawal", sans-serif';
-      ctx.fillText(diffCanvasText, width - 35, innerOffset + 23);
+      diffLines.forEach((line, lineIndex) => ctx.fillText(line, width - 35, innerOffset + 23 + lineIndex * 11));
 
-      innerOffset += 36;
+      innerOffset += diffBoxH + 6;
     }
 
     // هـ. صندوق الملاحظات داخل الكارت (لو موجود)
     if (hasNotes) {
-      let notesBoxH = notesLines.length > 1 ? 48 : 34;
+      let notesBoxH = Math.max(34, 24 + notesLines.length * 11);
       ctx.fillStyle = '#FAFAFC';
       ctx.strokeStyle = '#CBD5E1';
       ctx.beginPath();
@@ -1296,23 +1282,19 @@ document.getElementById('shareBookBtn').addEventListener('click', async () => {
       return;
     }
 
-    canvas.toBlob(async (blob) => {
-      const file = new File([blob], 'سجل-المتابعة-الأسبوعي.png', { type: 'image/png' });
-      if (navigator.canShare && navigator.canShare({ files: [file] })) {
-        await navigator.share({
-          files: [file],
-          title: 'سجل المتابعة الأسبوعي',
-          text: 'إليك سجل المتابعة الخاص بي 💚'
-        });
-        document.getElementById('bookShareNote').textContent = 'تمت المشاركة بنجاح! ✓';
-      } else {
-        const link = document.createElement('a');
-        link.href = canvas.toDataURL('image/png');
-        link.download = 'سجل-المتابعة-الأسبوعي.png';
-        link.click();
-        document.getElementById('bookShareNote').textContent = 'تم حفظ الصورة، يمكنك مشاركتها يدوياً.';
-      }
-    }, 'image/png');
+    const blob = await new Promise((resolve, reject) => canvas.toBlob(b => b ? resolve(b) : reject(new Error('تعذر إنشاء الصورة')), 'image/png'));
+    const file = new File([blob], 'سجل-المتابعة-الأسبوعي.png', { type: 'image/png' });
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      await navigator.share({ files: [file], title: 'سجل المتابعة الأسبوعي', text: 'إليك سجل المتابعة الخاص بي 💚' });
+      document.getElementById('bookShareNote').textContent = 'تمت المشاركة بنجاح! ✓';
+    } else {
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = 'سجل-المتابعة-الأسبوعي.png';
+      link.click();
+      setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+      document.getElementById('bookShareNote').textContent = 'تم حفظ الصورة، يمكنك مشاركتها يدوياً.';
+    }
   } catch (err) {
     document.getElementById('bookShareNote').textContent = 'تعذرت المشاركة المباشرة.';
   }
