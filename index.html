@@ -87,7 +87,7 @@
           <h2 class="font-extrabold text-[#762454] text-base flex items-center gap-2">
             <span class="w-2 h-4 rounded-full brand-gradient inline-block"></span> متابعة الأيام
           </h2>
-          <p id="monthLabel" class="text-[11px] text-slate-500 mt-0.5">جارٍ التحميل...</p>
+          <p id="monthLabel" class="text-[11px] text-[#107EAF] font-bold mt-0.5">رحلتك اليومية نحو صحة أفضل 🌱</p>
         </div>
         <div class="bg-[#FBEAF3] text-[#762454] border border-[#C93A8C]/20 text-[11px] font-bold px-2.5 py-1 rounded-xl" id="completedCount">
           0 أيام مسجلة
@@ -101,20 +101,9 @@
         <button id="nextDays" class="w-8 h-8 rounded-lg bg-white shadow-xs text-[#C93A8C] border border-[#C93A8C]/20 font-black flex items-center justify-center hover:bg-[#FBEAF3] transition active:scale-95">‹</button>
       </div>
 
-      <!-- Days Grid  -->
+   <!-- Days Grid  -->
       <div class="grid grid-cols-7 gap-1.5" id="calendar"></div>
-
-      <!-- Progress Track -->
-      <div class="space-y-1 pt-0.5">
-        <div class="flex justify-between text-[11px] font-bold text-slate-600">
-          <span>نسبة إنجاز الفترة</span>
-          <span id="progressText">0%</span>
-        </div>
-        <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden p-0.5 border border-slate-200">
-          <div id="monthProgress" class="brand-gradient h-full rounded-full transition-all duration-300" style="width: 0%"></div>
-        </div>
-      </div>
-    </section>
+    </section
 
     <!-- 2. تقرير اليوم -->
     <section class="bg-white border border-[#E8DCE8] rounded-2xl p-4 shadow-sm space-y-3">
@@ -353,19 +342,11 @@
           <h2 class="font-extrabold text-[#107EAF] text-base flex items-center gap-2">
             <span class="w-2 h-4 rounded-full brand-gradient inline-block"></span> تقرير المتابعة الاسبوعي
           </h2>
-          <p class="text-[11px] text-slate-500 mt-0.5">حالتك الصحية الاسبوعية</p>
+          <p class="text-[11px] text-slate-500 mt-0.5"> تفاصيل أيامك ورحلتك الصحية يوم بيوم  📊</p>
         </div>
         <button type="button" id="openJournalBookBtn" class="brand-gradient hover:opacity-95 text-white font-bold text-xs py-2 px-3.5 rounded-xl shadow-md transition active:scale-95 flex items-center gap-1.5">
           <span>📖 عرض التقرير الاسبوعي</span>
         </button>
-      </div>
-
-      <div class="bg-white border border-[#107EAF]/20 rounded-xl p-3 flex items-center justify-between shadow-2xs">
-        <div>
-          <span class="text-[11px] text-slate-500 block">ملخص فترة المتابعة</span>
-          <span id="journalQuickSummary" class="text-xs font-bold text-[#107EAF]">انقري على "عرض التقرير الاسبوعي" لعرض التفاصيل الكاملة</span>
-        </div>
-        <div class="w-8 h-8 rounded-lg bg-sky-50 text-[#107EAF] flex items-center justify-center font-bold text-xs">✨</div>
       </div>
     </section>
 
@@ -378,7 +359,7 @@
       <div class="brand-gradient text-white p-4 flex items-center justify-between relative">
         <div class="absolute -right-6 -bottom-6 w-24 h-24 bg-white/10 rounded-full blur-md"></div>
         <div>
-          <span class="text-[10px] bg-white/20 px-2 py-0.5 rounded font-bold uppercase">حالتك الصحية الاسبوعية</span>
+          <span class="text-[10px] bg-white/20 px-2 py-0.5 rounded font-bold uppercase">نظرة شاملة على يومياتك وعاداتك الغذائية 📖</span>
           <h3 id="bookTitleRange" class="font-black text-sm sm:text-base mt-1">التقرير الاسبوعي</h3>
         </div>
         <button type="button" id="closeJournalModal" class="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 text-white font-bold flex items-center justify-center text-base transition">✕</button>
@@ -423,13 +404,13 @@
   </footer>
 
 <script>
-// State Management (مرن بدون بداية أسبوع ثابتة وبدون ساعات ودقائق تلخبط)
+// State Management (بسيط، يومي، وبدون فترات أو أسابيع معقدة)
 const today = new Date();
 today.setHours(0, 0, 0, 0);
 
 const state = {
   selectedDate: new Date(today),
-  viewAnchorDate: new Date(today), // متغير خاص بثبات الشريط لا يتحرك عند الضغط على الأيام
+  viewAnchorDate: new Date(today), // نقطة بداية الشريط
   records: JSON.parse(localStorage.getItem('daily_health_records') || '{}')
 };
 
@@ -448,13 +429,12 @@ function saveToLocalStorage() {
   localStorage.setItem('daily_health_records', JSON.stringify(state.records));
 }
 
-// عرض شريط الأيام بالكامل بشكل صحيح ومظبوط 100%
+// تحديث الشريط ليظهر اليوم الحالي في المنتصف أو البداية وتحديث الأيام بسلاسة
 function renderCalendar() {
   const cal = document.getElementById('calendar');
   cal.innerHTML = '';
 
   const totalDaysShown = 7;
-  // الشريط يبدأ من تاريخ التثبيت (viewAnchorDate) ولا يتغير مكان الشريط أبداً عند الضغط على الأيام
   const baseDate = new Date(state.viewAnchorDate);
 
   const dates = [];
@@ -464,17 +444,16 @@ function renderCalendar() {
     dates.push(d);
   }
 
-  let completed = 0;
-  const selectedKey = `${state.selectedDate.getFullYear()}-${String(state.selectedDate.getMonth() + 1).padStart(2, '0')}-${String(state.selectedDate.getDate()).padStart(2, '0')}`;
+  const selectedKey = dateKey(state.selectedDate);
 
   dates.forEach((date) => {
-    const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+    const key = dateKey(date);
     const isDone = !!state.records[key] && Object.values(state.records[key]).some(v => Array.isArray(v) ? v.length > 0 : !!v);
     
-    if (isDone) completed++;
-
-    // اليوم المختار فقط هو الذي سيتلون باللون المتدرج دون أن يحرك مكان الشريط
+    // هل هو اليوم المختار حالياً؟
     const isSelected = (key === selectedKey);
+    // هل هو يوم اليوم الحالي في الحقيقة؟
+    const isToday = (key === dateKey(today));
 
     const btn = document.createElement('button');
     btn.type = 'button';
@@ -496,7 +475,6 @@ function renderCalendar() {
       <span class="w-1 h-1 rounded-full mt-1 ${isDone ? (isSelected ? 'bg-white' : 'bg-[#C93A8C]') : 'bg-transparent'} pointer-events-none"></span>
     `;
 
-    // عند الضغط على أي يوم، يتحدد ويتلون فوراً في مكانه دون تحريك الشريط
     btn.addEventListener('click', (e) => {
       e.preventDefault();
       selectDate(date);
@@ -505,17 +483,16 @@ function renderCalendar() {
     cal.appendChild(btn);
   });
 
-  const start = dates[0];
-  const end = dates[6];
-
-  document.getElementById('monthLabel').textContent = `${start.getDate()} ${monthNames[start.getMonth()]} - ${end.getDate()} ${monthNames[end.getMonth()]} ${end.getFullYear()}`;
+  // تحديث النصوص (بدون إشارات للفترة أو النسبة المئوية)
   document.getElementById('weekRangeIndicator').textContent = `${formatDate(state.selectedDate)}`;
-
-  const percentage = Math.round((completed / totalDaysShown) * 100);
-  document.getElementById('completedCount').textContent = `${completed} أيام مسجلة`;
-  document.getElementById('monthProgress').style.width = `${Math.min(percentage, 100)}%`;
-  document.getElementById('progressText').textContent = `${percentage}%`;
-  document.getElementById('journalQuickSummary').textContent = `تم تسجيل ${completed} أيام (${percentage}% إنجاز)`;
+  
+  // عداد الأيام المسجلة بشكل عام (كمجرد عدد إجمالي بدون نسب)
+  const totalSavedDays = Object.keys(state.records).filter(k => {
+    const r = state.records[k];
+    return r && Object.values(r).some(v => Array.isArray(v) ? v.length > 0 : !!v);
+  }).length;
+  
+  document.getElementById('completedCount').textContent = `${totalSavedDays} أيام مسجلة`;
 }
 
 function getFormData() {
@@ -563,7 +540,6 @@ function fillForm(data = {}) {
 }
 
 function selectDate(date) {
-  // إنشاء كائن تاريخ جديد تماماً لمنع تداخل المراجع
   state.selectedDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
   document.getElementById('selectedDateLabel').textContent = formatDate(state.selectedDate);
   fillForm(state.records[dateKey(state.selectedDate)] || {});
@@ -668,7 +644,7 @@ document.getElementById('downloadDailyImageBtn').addEventListener('click', async
   }
 });
 
-// مشاركة التقرير اليومي كصورة لأي تطبيق
+// مشاركة التقرير اليومي كصورة
 document.getElementById('shareBtn').addEventListener('click', async () => {
   const container = document.getElementById('dailyImageContainer');
   document.getElementById('shareNote').textContent = 'جاري تجهيز الصورة للمشاركة...';
@@ -696,12 +672,11 @@ document.getElementById('shareBtn').addEventListener('click', async () => {
   }
 });
 
-// تقرير المتابعة الأسبوعي
+// تقرير المتابعة (سجل الأيام المحفوظة)
 document.getElementById('openJournalBookBtn').addEventListener('click', () => {
-  // جمع كل المفاتيح المسجلة في الـ localStorage وترتيبها تنازلياً (الأحدث أولاً)
   const savedKeys = Object.keys(state.records).sort();
   
-  document.getElementById('bookTitleRange').textContent = `التقرير الاسبوعي (${savedKeys.length} يوم مسجل)`;
+  document.getElementById('bookTitleRange').textContent = `سجل المتابعة (${savedKeys.length} يوم مسجل)`;
 
   let totalLoggedDays = savedKeys.length;
   let totalWaterML = 0;
@@ -767,18 +742,16 @@ document.getElementById('closeJournalModal').addEventListener('click', () => {
 // حفظ التقرير الأسبوعي كصورة 
 document.getElementById('downloadBookImageBtn').addEventListener('click', async () => {
   const container = document.getElementById('weeklyImageContainer');
-  const modalContent = container.closest('.bg-\\[\\#FCFBFC\\]'); // نافذة المودال الداخلية
+  const modalContent = container.closest('.bg-\\[\\#FCFBFC\\]');
   const header = document.getElementById('bookExportHeader');
   
   header.classList.remove('hidden');
-  document.getElementById('bookShareNote').textContent = 'جاري تصدير التقرير الاسبوعي كصورة...';
+  document.getElementById('bookShareNote').textContent = 'جاري تصدير السجل كصورة...';
 
-  // حفظ الأوضاع الأصلية لتعديلها مؤقتاً أثناء التصدير
   const originalMaxHeight = modalContent.style.maxHeight;
   const originalOverflow = container.style.overflow;
   const originalHeight = container.style.height;
 
-  // إزالة القيود مؤقتاً ليلتقط المكتبة الصفحة بالكامل
   modalContent.style.maxHeight = 'none';
   container.style.overflow = 'visible';
   container.style.height = 'auto';
@@ -791,7 +764,6 @@ document.getElementById('downloadBookImageBtn').addEventListener('click', async 
       windowHeight: container.scrollHeight + 100
     });
     
-    // إرجاع الأوضاع الأصلية للمودال
     modalContent.style.maxHeight = originalMaxHeight;
     container.style.overflow = originalOverflow;
     container.style.height = originalHeight;
@@ -799,9 +771,9 @@ document.getElementById('downloadBookImageBtn').addEventListener('click', async 
 
     const link = document.createElement('a');
     link.href = canvas.toDataURL('image/png');
-    link.download = 'التقرير الاسبوعي.png';
+    link.download = 'سجل-المتابعة.png';
     link.click();
-    document.getElementById('bookShareNote').textContent = 'تم تحميل التقرير الاسبوعي كصورة بنجاح! ✓';
+    document.getElementById('bookShareNote').textContent = 'تم تحميل السجل كصورة بنجاح! ✓';
   } catch (err) {
     modalContent.style.maxHeight = originalMaxHeight;
     container.style.overflow = originalOverflow;
@@ -811,7 +783,7 @@ document.getElementById('downloadBookImageBtn').addEventListener('click', async 
   }
 });
 
-// مشاركة التقرير الاسبوعي
+// مشاركة التقرير الأسبوعي
 document.getElementById('shareBookBtn').addEventListener('click', async () => {
   const container = document.getElementById('weeklyImageContainer');
   const modalContent = container.closest('.bg-\\[\\#FCFBFC\\]');
@@ -842,18 +814,18 @@ document.getElementById('shareBookBtn').addEventListener('click', async () => {
     header.classList.add('hidden');
 
     canvas.toBlob(async (blob) => {
-      const file = new File([blob], 'التقرير الاسبوعي.png', { type: 'image/png' });
+      const file = new File([blob], 'سجل-المتابعة.png', { type: 'image/png' });
       if (navigator.canShare && navigator.canShare({ files: [file] })) {
         await navigator.share({
           files: [file],
-          title: 'تقرير المتابعة الاسبوعي',
-          text: 'إليك  التقرير الاسبوعي الخاص بي 💚'
+          title: 'سجل المتابعة',
+          text: 'إليك سجل المتابعة الخاص بي 💚'
         });
         document.getElementById('bookShareNote').textContent = 'تمت المشاركة بنجاح! ✓';
       } else {
         const link = document.createElement('a');
         link.href = canvas.toDataURL('image/png');
-        link.download = 'التقرير الاسبوعي.png';
+        link.download = 'سجل-المتابعة.png';
         link.click();
         document.getElementById('bookShareNote').textContent = 'تم حفظ الصورة، يمكنك مشاركتها يدوياً.';
       }
@@ -867,6 +839,7 @@ document.getElementById('shareBookBtn').addEventListener('click', async () => {
   }
 });
 
+// أزرار التنقل بين الأيام (تحريك شريط الأيام 7 أيام للخلف أو الأمام عند الضغط على الأسهم)
 document.getElementById('prevDays').addEventListener('click', () => {
   state.viewAnchorDate.setDate(state.viewAnchorDate.getDate() - 7);
   renderCalendar();
@@ -877,9 +850,15 @@ document.getElementById('nextDays').addEventListener('click', () => {
   renderCalendar();
 });
 
-// Initial Load
-renderCalendar();
-selectDate(state.selectedDate);
+// Initial Load: ضبط الشاشة لتفتح على اليوم الحالي وتحديد مكانه تلقائياً
+function initApp() {
+  // التأكد من أن الشريط يظهر اليوم الحالي في النطاق المعروض
+  state.viewAnchorDate = new Date(today);
+  state.viewAnchorDate.setDate(today.getDate() - 3); // ليكون اليوم الحالي في منتصف الأيام الـ 7 المعروضة
+  selectDate(today);
+}
+
+initApp();
 </script>
 </body>
 </html>
