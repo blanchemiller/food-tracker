@@ -531,7 +531,7 @@ function fillForm(data = {}) {
   const hasData = data && Object.values(data).some(v => Array.isArray(v) ? v.length > 0 : !!v);
   const statusEl = document.getElementById('saveStatus');
   if (hasData) {
-    statusEl.textContent = 'محفوظ ✓';
+    statusEl.textContent = 'تم الحفظ ✓';
     statusEl.className = 'text-xs font-bold px-2.5 py-0.5 rounded-xl bg-teal-50 text-teal-700 border border-teal-200';
   } else {
     statusEl.textContent = 'لم يتم التسجيل 📝';
@@ -576,7 +576,7 @@ document.getElementById('saveDayBtn').addEventListener('click', () => {
   statusEl.className = 'text-xs font-bold px-2.5 py-0.5 rounded-xl bg-[#FBEAF3] text-[#762454] border border-[#C93A8C]/30';
   
   setTimeout(() => {
-    statusEl.textContent = 'محفوظ ✓';
+    statusEl.textContent = 'تم الحفظ ✓';
   }, 2000);
 });
 
@@ -672,7 +672,7 @@ document.getElementById('shareBtn').addEventListener('click', async () => {
   }
 });
 
-// تقرير المتابعة (سجل الأيام المحفوظة)
+// تقرير المتابعة (سجل الأيام التى تم حفظها)
 document.getElementById('openJournalBookBtn').addEventListener('click', () => {
   const savedKeys = Object.keys(state.records).sort();
   
