@@ -628,7 +628,7 @@ document.getElementById('prepareReportBtn').addEventListener('click', () => {
   reportBox.scrollIntoView({ behavior: 'smooth' });
 });
 
-  // دالة الكانفاس النهائية (مع دعم التفاف الملاحظات الطويلة لعدة أسطر وتمدد الإطار تلقائياً)
+// دالة الكانفاس النهائية (مع دعم التفاف الملاحظات الطويلة لعدة أسطر وتمدد الإطار تلقائياً)
 async function captureDailyCardCanvas() {
   try {
     const d = getFormData();
@@ -832,16 +832,15 @@ async function captureDailyCardCanvas() {
   }
 }
 
-// حفظ التقرير اليومي كصورة
+// 1. زر تحميل التقرير اليومي كصورة
 document.getElementById('downloadDailyImageBtn').addEventListener('click', async () => {
-  const container = document.getElementById('dailyImageContainer');
   document.getElementById('shareNote').textContent = 'جاري تصدير الصورة...';
   try {
-    const canvas = await html2canvas(container, { scale: 2, backgroundColor: '#FFFFFF' });
+    const canvas = await captureDailyCardCanvas();
     const link = document.createElement('a');
     link.href = canvas.toDataURL('image/png');
     
-    // تكوين اسم الملف بناءً على التاريخ المحدد حالياً
+    // اسم الملف بتاريخ اليوم المحدد تلقائياً
     const year = state.selectedDate.getFullYear();
     const month = String(state.selectedDate.getMonth() + 1).padStart(2, '0');
     const day = String(state.selectedDate.getDate()).padStart(2, '0');
@@ -854,14 +853,12 @@ document.getElementById('downloadDailyImageBtn').addEventListener('click', async
   }
 });
 
-// مشاركة التقرير اليومي كصورة
+// 2. زر مشاركة التقرير اليومي كصورة
 document.getElementById('shareBtn').addEventListener('click', async () => {
-  const container = document.getElementById('dailyImageContainer');
   document.getElementById('shareNote').textContent = 'جاري تجهيز الصورة للمشاركة...';
   try {
-    const canvas = await html2canvas(container, { scale: 2, backgroundColor: '#FFFFFF' });
+    const canvas = await captureDailyCardCanvas();
     
-    // تكوين اسم الملف بناءً على التاريخ المحدد حالياً
     const year = state.selectedDate.getFullYear();
     const month = String(state.selectedDate.getMonth() + 1).padStart(2, '0');
     const day = String(state.selectedDate.getDate()).padStart(2, '0');
