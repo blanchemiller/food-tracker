@@ -114,7 +114,7 @@
           </h2>
           <span id="selectedDateLabel" class="text-xs font-bold text-[#107EAF]">اليوم</span>
         </div>
-        <span id="saveStatus" class="text-xs font-bold px-2.5 py-0.5 rounded-xl bg-amber-50 text-amber-700 border border-amber-200">مسودة جديدة</span>
+        <span id="saveStatus" class="text-xs font-bold px-2.5 py-0.5 rounded-xl bg-amber-50 text-amber-700 border border-amber-200">لم يتم التسجيل 📝</span>
       </div>
 
       <form id="dailyForm" class="space-y-3">
@@ -534,7 +534,7 @@ function fillForm(data = {}) {
     statusEl.textContent = 'محفوظ ✓';
     statusEl.className = 'text-xs font-bold px-2.5 py-0.5 rounded-xl bg-teal-50 text-teal-700 border border-teal-200';
   } else {
-    statusEl.textContent = 'مسودة جديدة';
+    statusEl.textContent = 'لم يتم التسجيل 📝';
     statusEl.className = 'text-xs font-bold px-2.5 py-0.5 rounded-xl bg-amber-50 text-amber-700 border border-amber-200';
   }
 }
