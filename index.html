@@ -636,7 +636,13 @@ document.getElementById('downloadDailyImageBtn').addEventListener('click', async
     const canvas = await html2canvas(container, { scale: 2, backgroundColor: '#FFFFFF' });
     const link = document.createElement('a');
     link.href = canvas.toDataURL('image/png');
-    link.download = 'التقرير-اليومي.png';
+    
+    // تكوين اسم الملف بناءً على التاريخ المحدد حالياً
+    const year = state.selectedDate.getFullYear();
+    const month = String(state.selectedDate.getMonth() + 1).padStart(2, '0');
+    const day = String(state.selectedDate.getDate()).padStart(2, '0');
+    link.download = `تقرير-يوم-${year}-${month}-${day}.png`;
+    
     link.click();
     document.getElementById('shareNote').textContent = 'تم تحميل الصورة بنجاح! ✓';
   } catch (err) {
@@ -650,8 +656,15 @@ document.getElementById('shareBtn').addEventListener('click', async () => {
   document.getElementById('shareNote').textContent = 'جاري تجهيز الصورة للمشاركة...';
   try {
     const canvas = await html2canvas(container, { scale: 2, backgroundColor: '#FFFFFF' });
+    
+    // تكوين اسم الملف بناءً على التاريخ المحدد حالياً
+    const year = state.selectedDate.getFullYear();
+    const month = String(state.selectedDate.getMonth() + 1).padStart(2, '0');
+    const day = String(state.selectedDate.getDate()).padStart(2, '0');
+    const fileName = `تقرير-يوم-${year}-${month}-${day}.png`;
+
     canvas.toBlob(async (blob) => {
-      const file = new File([blob], 'التقرير-اليومي.png', { type: 'image/png' });
+      const file = new File([blob], fileName, { type: 'image/png' });
       if (navigator.canShare && navigator.canShare({ files: [file] })) {
         await navigator.share({
           files: [file],
@@ -662,7 +675,7 @@ document.getElementById('shareBtn').addEventListener('click', async () => {
       } else {
         const link = document.createElement('a');
         link.href = canvas.toDataURL('image/png');
-        link.download = 'التقرير-اليومي.png';
+        link.download = fileName;
         link.click();
         document.getElementById('shareNote').textContent = 'تم حفظ الصورة، يمكنك مشاركتها من ألبوم الصور.';
       }
